@@ -9,7 +9,8 @@ A discord bot for managing your World of Warcraft guild's EPGP.
 * Data integrity - addon-based solutions often have problems with officers overwriting eachothers changes.
 * Alt-friendly - each player's characters are always linked together and their EPGP is shared. Addon-based solutions often have problems keeping these linkages synchronized between officers.
 * Huge time savings for the entire officer team. Users can now ask the bot questions instead of you!
-* Prevent mistakes - bot validates commands to help you avoid common mistakes such as granting a player double EP for the same raid/
+* Prevent mistakes - bot validates commands to help you avoid common mistakes such as granting a player double EP for the same raid.
+* Keep player and officer notes free - addon-based solutions occupy these so you can't use them.
 
 ## Screenshots
 
