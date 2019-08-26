@@ -11,6 +11,7 @@ A discord bot for managing your World of Warcraft guild's EPGP.
 * Huge time savings for the entire officer team. Users can now ask the bot questions instead of you!
 * Prevent mistakes - bot validates commands to help you avoid common mistakes such as granting a player double EP for the same raid.
 * Keep player and officer notes free - addon-based solutions occupy these so you can't use them.
+* Free and Open Source - own and manage your own data.
 
 ## Screenshots
 
@@ -202,6 +203,6 @@ My guild has had success with the following:
 
 While these numbers work well for us, they are not necessarily the best choice for your guild.
 
-* **How can I undo an EPGP modification? **
+* **How can I undo an EPGP modification?**
 
 Just repeat the command, but use a negative value.
