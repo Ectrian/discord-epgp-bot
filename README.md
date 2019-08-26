@@ -13,14 +13,14 @@ A discord bot for managing your World of Warcraft guild's EPGP.
 
 ## Screenshots
 
-![Screenshot](/screenshots/screenshot1.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot2.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot3.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot4.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot5.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot6.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot7.jpg?raw=true "Screenshot")
-![Screenshot](/screenshots/screenshot8.jpg?raw=true "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot1.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot2.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot3.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot4.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot5.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot6.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot7.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/Ectrian/discord-epgp-bot/master/screenshots/screenshot8.png "Screenshot")
 
 ## Set-Up
 
