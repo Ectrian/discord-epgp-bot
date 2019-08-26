@@ -89,7 +89,7 @@ A discord bot for managing your World of Warcraft guild's EPGP.
 ```
 
 * Run your bot.
-  * `java com.epgpbot.discordbot.DiscordBotLauncher config.json`
+  * `java com.epgpbot.transport.discord.DiscordBotLauncher config.json`
 
 * Install the in-game helper addon (optional, recommended).
   * Copy `src/main/resources/RaidMemberList` into your WoW addons folder.
