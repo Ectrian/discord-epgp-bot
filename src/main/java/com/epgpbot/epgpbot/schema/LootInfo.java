@@ -16,12 +16,12 @@ import com.epgpbot.epgpbot.schema.game.ItemRarity;
 import com.google.common.collect.ImmutableList;
 
 public class LootInfo {
-  private static final String GET_QUERY =
-        "SELECT l.id, l.name, lgi.game_id, lgi.game_rarity "
-      + "FROM loot AS l "
-      + "LEFT JOIN loot_game_info AS lgi ON lgi.loot_id = l.id "
-      + "WHERE %s "
+  private static final String GET_QUERY = "SELECT l.id, l.name, lgi.game_id, lgi.game_rarity "
+      + "FROM loot AS l " + "LEFT JOIN loot_game_info AS lgi ON lgi.loot_id = l.id " + "WHERE %s "
       + "ORDER BY l.name ASC;";
+  private static final String GET_ALIAS_QUERY = "SELECT l.id, l.name, lgi.game_id, lgi.game_rarity "
+      + "FROM loot AS l " + "LEFT JOIN loot_game_info AS lgi ON lgi.loot_id = l.id "
+      + "LEFT JOIN loot_alias AS la ON la.loot_id = l.id " + "WHERE %s " + "ORDER BY l.name ASC;";
   public long lootId;
   public String name;
 
@@ -102,12 +102,9 @@ public class LootInfo {
   }
 
   private static LootInfo readNext(Cursor r) throws Exception {
-    return new LootInfo(
-      r.get("id", Long.class),
-      r.get("name", String.class),
-      r.getNullable("game_id", Long.class).orElse(-1L),
-      r.getNullable("game_rarity", Integer.class).orElse(-1)
-    );
+    return new LootInfo(r.get("id", Long.class), r.get("name", String.class),
+        r.getNullable("game_id", Long.class).orElse(-1L),
+        r.getNullable("game_rarity", Integer.class).orElse(-1));
   }
 
   private static LootInfo get(Transaction tx, Statement q) throws Exception {
@@ -150,23 +147,27 @@ public class LootInfo {
     List<LootInfo> fuzzyMatches = new ArrayList<>();
     List<LootInfo> exactMatches = new ArrayList<>();
 
-    query = query
-        .replace("!", "!!")
-        .replace("%", "!%")
-        .replace("_", "!_")
-        .replace("[", "![");
+    query = query.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![");
 
-    // TODO: Support aliases.
-    try (Statement q = tx.prepare(String.format(GET_QUERY,
-        "lgi.game_id IS NOT NULL AND l.name LIKE :query ESCAPE '!'"))) {
+    try (Statement q = tx.prepare(String.format(GET_ALIAS_QUERY, "la.name = :query"))) {
+      q.bind("query", query);
+      try (Cursor r = q.executeFetch()) {
+        while (r.next()) {
+          LootInfo out = readNext(r);
+          fuzzyMatches.add(out);
+        }
+      }
+    }
+
+    try (Statement q = tx.prepare(
+        String.format(GET_QUERY, "lgi.game_id IS NOT NULL AND l.name LIKE :query ESCAPE '!'"))) {
       q.bind("query", "%" + query + "%");
       try (Cursor r = q.executeFetch()) {
         while (r.next()) {
           LootInfo out = readNext(r);
           if (query.toLowerCase().equals(out.name.toLowerCase())) {
             exactMatches.add(out);
-          }
-          else {
+          } else {
             fuzzyMatches.add(out);
           }
         }

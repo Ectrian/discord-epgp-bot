@@ -8,7 +8,7 @@ import java.util.Map;
 import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
-import com.epgpbot.util.TextTable;
+import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -37,9 +37,10 @@ public class TransportListNoRolesCommandHandler extends CommandHandlerAbstract {
       data.add(row);
     }
 
-    context.replyf("**Unroled Members:**\n```\n%s\n```\n",
-        TextTable.format(ImmutableList.of("id", "name", "alias"), data, ImmutableSet.of())
-    );
+
+    context.replyWithPages(new TablePageSource("Unroled Members", data,
+        ImmutableList.of("id", "name", "alias"),
+        ImmutableSet.of()));
   }
 
   @Override

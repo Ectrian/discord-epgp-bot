@@ -9,17 +9,18 @@ import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.epgpbot.util.EmbedLinkListPageSource;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 public class ItemSearchCommandHandler extends CommandHandlerAbstract {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    if (request.arguments().size() != 1) {
+    if (request.arguments().isEmpty()) {
       sendCorrectUsage(context);
       return;
     }
 
-    String query = request.arguments().get(0);
+    String query = Joiner.on(" ").join(request.arguments());
     List<LootInfo> matches;
     try (Transaction tx = context.database().transaction()) {
       matches = LootInfo.search(tx, query);

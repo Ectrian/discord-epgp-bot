@@ -25,11 +25,18 @@ public class LootStatsCommandHandler extends AbstractEPGPCommandHandler {
 
     try (Transaction tx = context.database().transaction()) {
       List<LootInfo> matches = LootInfo.search(tx, request.arguments().get(0));
-      if (matches.size() != 1 &&
-          !matches.get(0).name.toLowerCase().equals(request.arguments().get(0).toLowerCase())) {
+
+      if (matches.isEmpty()) {
         sendError(context, "Unknown loot '%s'.", request.arguments().get(0));
         return;
       }
+
+      if (matches.size() != 1 &&
+          !matches.get(0).name.toLowerCase().equals(request.arguments().get(0).toLowerCase())) {
+        sendError(context, "Ambiguous loot '%s'.", request.arguments().get(0));
+        return;
+      }
+
       LootInfo loot = matches.get(0);
 
       try (Statement q = tx.prepare(

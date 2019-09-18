@@ -53,6 +53,7 @@ import com.epgpbot.epgpbot.commands.PlayerCharacterListCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerCreepCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerLinkCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerSyncCommandHandler;
+import com.epgpbot.epgpbot.commands.PlayerTransportListCommandHandler;
 import com.epgpbot.epgpbot.commands.QuitCommandHandler;
 import com.epgpbot.epgpbot.commands.RollCommandHandler;
 import com.epgpbot.epgpbot.commands.TestCommandHandler;
@@ -115,6 +116,7 @@ public class EventHandler implements AutoCloseable {
     handlers.add(new PlayerCharacterAddCommandHandler());
     handlers.add(new PlayerCharacterListCommandHandler());
     handlers.add(new PlayerLinkCommandHandler());
+    handlers.add(new PlayerTransportListCommandHandler());
 
     handlers.add(new QuitCommandHandler());
 

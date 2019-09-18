@@ -44,6 +44,7 @@ class InteractiveCompareListener implements ReactionListener {
   private final Database db;
   private final String messageId;
   private final boolean details;
+  private final String title;
   private Set<User> reactions;
   private long expireTime;
 
@@ -53,6 +54,7 @@ class InteractiveCompareListener implements ReactionListener {
       EPGP epgp,
       String messageId,
       List<String> pinnedCharacters,
+      String title,
       boolean details,
       MessageChannel channel) {
     this.config = config;
@@ -60,6 +62,7 @@ class InteractiveCompareListener implements ReactionListener {
     this.epgp = epgp;
     this.messageId = messageId;
     this.pinnedCharacters = ImmutableSet.copyOf(pinnedCharacters);
+    this.title = title;
     this.details = details;
     this.reactions = new HashSet<>();
     this.expireTime = Instant.now().getEpochSecond() + TIMEOUT_SEC;
@@ -79,6 +82,9 @@ class InteractiveCompareListener implements ReactionListener {
 
   private String render() throws Exception {
     String out = "**EPGP Comparison:**\n";
+    if (!title.isEmpty()) {
+      out = String.format("**%s:**\n", title);
+    }
 
     List<String> fields = ImmutableList.of("player", "character", "ep", "gp", "priority");
     if (details) {
@@ -231,7 +237,7 @@ class InteractiveCompareListener implements ReactionListener {
     updateMessage(event.getChannel());
   }
 
-  public static void send(CommandContext context, List<String> characterNames, boolean details) {
+  public static void send(CommandContext context, List<String> characterNames, boolean details, String title) {
     context.source().raw()
       .sendMessage("(initializing...)")
       .queue((Message m) -> {
@@ -243,6 +249,7 @@ class InteractiveCompareListener implements ReactionListener {
               context.epgp(),
               m.getId(),
               characterNames,
+              title,
               details,
               m.getChannel())
         );
@@ -254,12 +261,12 @@ class InteractiveCompareListener implements ReactionListener {
 public class EPGPInteractiveCompareCommandHandler extends AbstractEPGPCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    InteractiveCompareListener.send(context, request.arguments(), request.hasFlag("details"));
+    InteractiveCompareListener.send(context, request.arguments(), request.hasFlag("details"), Joiner.on(" ").join(request.flag("title")));
   }
 
   @Override
   public String help() {
-    return "<...character:string> [--details] - Compares EPGP across multiple characters. Users may react/un-react to add themselves to the comparison.";
+    return "<...character:string> [--details] [--title <string>] - Compares EPGP across multiple characters. Users may react/un-react to add themselves to the comparison.";
   }
 
   @Override

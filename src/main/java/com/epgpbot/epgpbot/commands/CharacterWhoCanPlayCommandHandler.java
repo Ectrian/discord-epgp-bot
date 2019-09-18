@@ -14,7 +14,7 @@ import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
-import com.epgpbot.util.TextTable;
+import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -72,49 +72,39 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
   }
 
   private static final Map<String, Set<ClassAndSpec>> ROLES =
-    new ImmutableMap.Builder<String, Set<ClassAndSpec>>()
-      .put("tank",
-           new ImmutableSet.Builder<ClassAndSpec>()
-             .add(new ClassAndSpec("warrior", "protection"))
-             .add(new ClassAndSpec("paladin", "protection"))
-             .add(new ClassAndSpec("death knight", "blood")) // Not perfectly accurate.
-             .add(new ClassAndSpec("druid", "feral combat")) // Not perfectly accurate.
-             .build())
-      .put("healer",
-          new ImmutableSet.Builder<ClassAndSpec>()
-            .add(new ClassAndSpec("druid", "restoration"))
-            .add(new ClassAndSpec("paladin", "holy"))
-            .add(new ClassAndSpec("priest", "holy"))
-            .add(new ClassAndSpec("priest", "discipline"))
-            .add(new ClassAndSpec("shaman", "restoration"))
-            .build())
-      .put("dps",
-          new ImmutableSet.Builder<ClassAndSpec>()
-            .add(new ClassAndSpec("hunter", "marksman"))
-            .add(new ClassAndSpec("hunter", "survival"))
-            .add(new ClassAndSpec("hunter", "beast Mastery"))
-            .add(new ClassAndSpec("warlock", "affliction"))
-            .add(new ClassAndSpec("warlock", "demonology"))
-            .add(new ClassAndSpec("warlock", "destruction"))
-            .add(new ClassAndSpec("warrior", "arms"))
-            .add(new ClassAndSpec("warrior", "fury"))
-            .add(new ClassAndSpec("death knight", "unholy")) // Not perfectly accurate.
-            .add(new ClassAndSpec("death knight", "frost"))  // Not perfectly accurate.
-            .add(new ClassAndSpec("death knight", "blood"))  // Not perfectly accurate.
-            .add(new ClassAndSpec("druid", "balance"))
-            .add(new ClassAndSpec("druid", "feral Combat"))  // Not perfectly accurate.
-            .add(new ClassAndSpec("paladin", "retribution"))
-            .add(new ClassAndSpec("priest", "shadow"))
-            .add(new ClassAndSpec("shaman", "elemental"))
-            .add(new ClassAndSpec("shaman", "enhancement"))
-            .add(new ClassAndSpec("mage", "arcane"))
-            .add(new ClassAndSpec("mage", "fire"))
-            .add(new ClassAndSpec("mage", "frost"))
-            .add(new ClassAndSpec("rogue", "combat"))
-            .add(new ClassAndSpec("rogue", "assassination"))
-            .add(new ClassAndSpec("rogue", "subtlety"))
-            .build())
-      .build();
+      new ImmutableMap.Builder<String, Set<ClassAndSpec>>().put("tank",
+          new ImmutableSet.Builder<ClassAndSpec>().add(new ClassAndSpec("warrior", "protection"))
+              .add(new ClassAndSpec("paladin", "protection"))
+              .add(new ClassAndSpec("death knight", "blood")) // Not perfectly accurate.
+              .add(new ClassAndSpec("druid", "feral combat")) // Not perfectly accurate.
+              .build())
+          .put("healer",
+              new ImmutableSet.Builder<ClassAndSpec>().add(new ClassAndSpec("druid", "restoration"))
+                  .add(new ClassAndSpec("paladin", "holy")).add(new ClassAndSpec("priest", "holy"))
+                  .add(new ClassAndSpec("priest", "discipline"))
+                  .add(new ClassAndSpec("shaman", "restoration")).build())
+          .put("dps",
+              new ImmutableSet.Builder<ClassAndSpec>().add(new ClassAndSpec("hunter", "marksman"))
+                  .add(new ClassAndSpec("hunter", "survival"))
+                  .add(new ClassAndSpec("hunter", "beast Mastery"))
+                  .add(new ClassAndSpec("warlock", "affliction"))
+                  .add(new ClassAndSpec("warlock", "demonology"))
+                  .add(new ClassAndSpec("warlock", "destruction"))
+                  .add(new ClassAndSpec("warrior", "arms")).add(new ClassAndSpec("warrior", "fury"))
+                  .add(new ClassAndSpec("death knight", "unholy")) // Not perfectly accurate.
+                  .add(new ClassAndSpec("death knight", "frost")) // Not perfectly accurate.
+                  .add(new ClassAndSpec("death knight", "blood")) // Not perfectly accurate.
+                  .add(new ClassAndSpec("druid", "balance"))
+                  .add(new ClassAndSpec("druid", "feral Combat")) // Not perfectly accurate.
+                  .add(new ClassAndSpec("paladin", "retribution"))
+                  .add(new ClassAndSpec("priest", "shadow"))
+                  .add(new ClassAndSpec("shaman", "elemental"))
+                  .add(new ClassAndSpec("shaman", "enhancement"))
+                  .add(new ClassAndSpec("mage", "arcane")).add(new ClassAndSpec("mage", "fire"))
+                  .add(new ClassAndSpec("mage", "frost")).add(new ClassAndSpec("rogue", "combat"))
+                  .add(new ClassAndSpec("rogue", "assassination"))
+                  .add(new ClassAndSpec("rogue", "subtlety")).build())
+          .build();
 
   private static Set<String> flagSet(Request request, String name) {
     Set<String> out = new HashSet<>();
@@ -156,14 +146,9 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
         filterToPlayers.add(playerId.id);
       }
 
-      try (Statement q = tx.prepare(
-          "SELECT c.*, p.name AS player_name "
-        + "FROM characters AS c "
-        + "JOIN players AS p ON p.id = c.player_id "
-        + "WHERE "
-        + "  c.player_id IS NOT NULL "
-        + "  AND c.deleted = 0 "
-        + ";")) {
+      try (Statement q = tx.prepare("SELECT c.*, p.name AS player_name " + "FROM characters AS c "
+          + "JOIN players AS p ON p.id = c.player_id " + "WHERE " + "  c.player_id IS NOT NULL "
+          + "  AND c.deleted = 0 " + ";")) {
         try (Cursor r = q.executeFetch()) {
           while (r.next()) {
             long playerId = r.get("player_id", Long.class);
@@ -171,8 +156,7 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
             Optional<String> spec2 = r.getNullable("talent_spec2_tree", String.class);
             Optional<String> clazz = r.getNullable("class", String.class);
 
-            if (!filterToPlayers.isEmpty() &&
-                !filterToPlayers.contains(playerId)) {
+            if (!filterToPlayers.isEmpty() && !filterToPlayers.contains(playerId)) {
               continue;
             }
 
@@ -186,8 +170,10 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
             }
 
             if (!filterToSpecs.isEmpty()) {
-              boolean matchSpec1 = spec1.isPresent() && filterToSpecs.contains(spec1.get().toLowerCase());
-              boolean matchSpec2 = spec2.isPresent() && filterToSpecs.contains(spec2.get().toLowerCase());
+              boolean matchSpec1 =
+                  spec1.isPresent() && filterToSpecs.contains(spec1.get().toLowerCase());
+              boolean matchSpec2 =
+                  spec2.isPresent() && filterToSpecs.contains(spec2.get().toLowerCase());
               if (!matchSpec1 && !matchSpec2) {
                 continue;
               }
@@ -218,11 +204,9 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
       }
     }
 
-    context.reply("**Result:**\n```\n" + TextTable.format(
-      ImmutableList.of("player", "name", "level", "race", "class", "guild", "spec1", "spec2"),
-      table,
-      ImmutableSet.of()
-    ) + "```\n");
+    context.replyWithPages(new TablePageSource("Search Results", table,
+        ImmutableList.of("player", "name", "level", "race", "class", "guild", "spec1", "spec2"),
+        ImmutableSet.of()));
   }
 
   @Override
