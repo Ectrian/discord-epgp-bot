@@ -48,7 +48,7 @@ public class EPGPStandingsCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[--limit <count:int>] - Displays the current EPGP standings.";
+    return "- Displays the current EPGP standings.";
   }
 
   @Override

@@ -14,11 +14,10 @@ import com.epgpbot.epgpbot.schema.EPGPEventType;
 import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
-import com.epgpbot.util.TextTable;
+import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
-public class EPGPDecayAdjustHandler extends AbstractEPGPCommandHandler {
+public class EPGPRewriteHistoryCommandHandler extends AbstractEPGPCommandHandler {
   public long getLongArg(Request request, String name, long dflt) {
     if (!request.hasFlag(name)) {
       return dflt;
@@ -128,22 +127,21 @@ public class EPGPDecayAdjustHandler extends AbstractEPGPCommandHandler {
     }
 
     if (!apply) {
-      context.replyf("** Retroactive Decay Rewrite (PREVIEW) **\nThe following is a preview (changes not applied). Re-run with '--go' to apply.");
+      context.replyf("**Retroactive Decay Rewrite (PREVIEW) **\nThe following is a preview of the new EPGP standings after applying new parameters retroactively. Re-run with '--go' to apply.");
     } else {
-      context.replyf("** Retroactive Decay Rewrite **\nThe following changes have been applied:");
+      context.replyf("**Retroactive Decay Rewrite **\nThe following changes have been applied:");
     }
-    context.reply("```\n" + TextTable.format(
-        ImmutableList.of(
+
+    context.replyWithPages(
+        new TablePageSource("EPGP Adjustments", table, ImmutableList.of(
             "id", "name",
             "ep_net", "gp_net", "priority",
             "new_ep_net", "new_gp_net", "new_priority",
             "ep_delta", "gp_delta", "priority_delta",
             "old_rank", "new_rank", "rank_change",
             "items_won", "gp_earned"
-        ),
-        table,
-        ImmutableSet.of()
-    ) + "```\n");
+        )));
+
     if (apply) {
       context.replyf("Operation successful - %d players updated.", table.size());
     }
@@ -235,7 +233,7 @@ public class EPGPDecayAdjustHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[--go] [--base-gp <:int>] [--decay-gp <:int>] [--decay-rate <:int>] [--initial-gp <:int>] [--ep-mult <:float>] [--gp-mult <:float>] - Retroactively adjusts EPGP values for all players.";
+    return "[--go] [--base-gp <:int>] [--decay-gp <:int>] [--decay-rate <:int>] [--initial-gp <:int>] [--ep-mult <:float>] [--gp-mult <:float>] - Adjusts EPGP values by applying new EPGP parameters retroactively.";
   }
 
   @Override

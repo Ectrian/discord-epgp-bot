@@ -45,7 +45,7 @@ public class EPGPAwardStandbyCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<ep-amount:int> <raid:string> <...character:string> [--note <note:string>] [--skip <...character:string>] - Awards EP for standing by for a raid.";
+    return "<ep:int> <raid:string> <...character:string> [--note <:string>] [--skip <...character:string>] - Awards EP for standing by for a raid.";
   }
 
   @Override

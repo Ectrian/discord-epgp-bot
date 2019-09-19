@@ -13,7 +13,7 @@ import com.epgpbot.transport.Request;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
-public class EPGPIntegrityCommandHandler extends AbstractEPGPCommandHandler {
+public class EPGPCheckDBIntegrityCommandHandler extends AbstractEPGPCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     List<String> inconsistentPlayers = new ArrayList<>();
@@ -61,7 +61,7 @@ public class EPGPIntegrityCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "- Checks database integrity.";
+    return "- Validates the database is internally consistent (for debugging).";
   }
 
   @Override

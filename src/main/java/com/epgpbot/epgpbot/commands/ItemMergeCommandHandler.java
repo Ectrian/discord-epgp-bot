@@ -10,7 +10,7 @@ import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
-public class LootMergeCommandHandler extends CommandHandlerAbstract {
+public class ItemMergeCommandHandler extends CommandHandlerAbstract {
   public Long getLootId(CommandContext context, String name) throws Exception {
     try (Transaction tx = context.database().transaction();
         Statement q = tx.prepare("SELECT id FROM loot WHERE lower(name) = :name;");) {
@@ -63,12 +63,12 @@ public class LootMergeCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<loot:string> <loot:string> - Merges two loot records together.";
+    return "<item:string> <item-alt-name:string> - Merges two items into a single entry.";
   }
 
   @Override
   public String command() {
-    return "loot.merge";
+    return "item.merge";
   }
 
   @Override

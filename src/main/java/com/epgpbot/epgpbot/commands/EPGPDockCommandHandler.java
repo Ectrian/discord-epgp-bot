@@ -35,7 +35,7 @@ public class EPGPDockCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<ep-amount:int> <reason:string> <...character:string> - Removes EP for poor performance.";
+    return "<ep:int> <reason:string> <...character:string> - Removes EP for poor performance.";
   }
 
   @Override

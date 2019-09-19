@@ -89,7 +89,7 @@ public class EPGPCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[<character:string>] - Displays EPGP standings for a character (or for yourself if omitted).";
+    return "[<character:string>] - Displays EPGP for a character.";
   }
 
   @Override

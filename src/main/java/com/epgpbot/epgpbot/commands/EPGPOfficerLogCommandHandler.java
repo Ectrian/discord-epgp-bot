@@ -84,7 +84,7 @@ public class EPGPOfficerLogCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[<character:string>] [--page <n:int>] [--limit <count:int>] [--type <...type:string>] [--loot <...loot:string>] - Displays the EPGP audit log for a given officer (current if omitted).";
+    return "[<officer-character:string>] [--type <...type:string>] [--loot <...loot:string>] - Displays the EPGP audit log for a given officer.";
   }
 
   @Override

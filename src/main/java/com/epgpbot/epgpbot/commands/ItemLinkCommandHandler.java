@@ -60,7 +60,7 @@ public class ItemLinkCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<id:int|name:string> - Displays an item tool-tip.";
+    return "<item-id:int|item-name:string> - Displays an item tool-tip.";
   }
 
   @Override

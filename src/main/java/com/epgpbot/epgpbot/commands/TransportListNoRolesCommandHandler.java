@@ -45,7 +45,7 @@ public class TransportListNoRolesCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return " - Lists Discord users with no roles.";
+    return " - Lists Discord accounts on your server with no attached roles.";
   }
 
   @Override

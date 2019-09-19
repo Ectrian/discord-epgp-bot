@@ -211,7 +211,7 @@ public class CharacterWhoCanPlayCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "[--class <...class:string>] [--spec <...spec:string>] [--role <'healer'|'tank'|'dps'>] [--alts-of <...character:string>] - Displays who is able to play a particular class, spec, or role.";
+    return "[--class <...:string>] [--spec <...:string>] [--role <'healer'|'tank'|'dps'>] [--alts-of <...character:string>] - Displays who is able to play a particular class, spec, or role.";
   }
 
   @Override

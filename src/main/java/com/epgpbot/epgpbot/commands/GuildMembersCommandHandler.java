@@ -7,7 +7,7 @@ import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
-public class GuildOnlineCommandHandler extends GuildAbstractCommandHandler {
+public class GuildMembersCommandHandler extends GuildAbstractCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     showOnlinePlayers(context, request, false);

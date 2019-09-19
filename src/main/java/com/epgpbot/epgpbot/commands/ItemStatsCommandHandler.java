@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
-public class LootStatsCommandHandler extends AbstractEPGPCommandHandler {
+public class ItemStatsCommandHandler extends AbstractEPGPCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     if (request.arguments().size() != 1) {
@@ -90,7 +90,7 @@ public class LootStatsCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<item:string> - Displays stats about a piece of loot.";
+    return "<item:string> - Displays stats about an item.";
   }
 
   @Override

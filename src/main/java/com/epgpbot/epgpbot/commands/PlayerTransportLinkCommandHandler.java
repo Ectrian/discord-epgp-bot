@@ -10,7 +10,7 @@ import com.epgpbot.transport.Request;
 import com.epgpbot.transport.User;
 import com.google.common.collect.ImmutableList;
 
-public class PlayerLinkCommandHandler extends CommandHandlerAbstract {
+public class PlayerTransportLinkCommandHandler extends CommandHandlerAbstract {
   // TODO: Audit logging.
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
@@ -46,12 +46,12 @@ public class PlayerLinkCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<player:string> <@mention:mention> - Links a Discord user to a player record.";
+    return "<player:string> <user:@ref> - Links a player to a Discord account.";
   }
 
   @Override
   public String command() {
-    return "player.link";
+    return "player.transport.link";
   }
 
   @Override

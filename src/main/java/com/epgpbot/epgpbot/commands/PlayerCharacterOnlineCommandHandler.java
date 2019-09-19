@@ -18,7 +18,7 @@ import com.epgpbot.util.TextTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-public class PlayerCreepCommandHandler extends CommandHandlerAbstract {
+public class PlayerCharacterOnlineCommandHandler extends CommandHandlerAbstract {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     if (request.arguments().size() < 1) {

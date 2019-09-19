@@ -10,7 +10,7 @@ import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
-public class LootAliasCommandHandler extends CommandHandlerAbstract {
+public class ItemAliasCommandHandler extends CommandHandlerAbstract {
   public Long getLootId(CommandContext context, String name) throws Exception {
     try (Transaction tx = context.database().transaction();
         Statement q = tx.prepare("SELECT id FROM loot WHERE lower(name) = :name;");) {
@@ -85,7 +85,7 @@ public class LootAliasCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<loot:string> <...alias:string> - Creates aliases for a loot entry.";
+    return "<item:string> <...alias:string> - Creates aliases for an item name.";
   }
 
   @Override

@@ -35,7 +35,7 @@ public class EPGPAwardIncentiveCommandHandler extends AbstractEPGPCommandHandler
 
   @Override
   public String help() {
-    return "<ep-amount:int> <reason:string> <...character:string> - Awards EP for non-raid reasons.";
+    return "<ep:int> <reason:string> <...character:string> - Awards EP for non-raid reasons.";
   }
 
   @Override

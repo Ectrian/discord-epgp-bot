@@ -62,7 +62,7 @@ public class PlayerCharacterListCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<player:string> - Lists all of a player's characters.";
+    return "<player:string> - Lists a player's characters.";
   }
 
   @Override

@@ -38,7 +38,7 @@ public class ItemSearchCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<name:string> - Searches for items.";
+    return "<item:string> - Searches for items.";
   }
 
   @Override

@@ -52,7 +52,7 @@ public class PlayerTransportListCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<player:string> - Lists Discord users linked to a player.";
+    return "<player:string> - Lists a player's Discord accounts.";
   }
 
   @Override

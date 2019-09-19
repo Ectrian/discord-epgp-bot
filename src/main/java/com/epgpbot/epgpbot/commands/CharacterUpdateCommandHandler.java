@@ -144,7 +144,7 @@ public class CharacterUpdateCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<name:string> [--level <int> --race <string> --class <string> --guild <string> --spec1 <string> --spec2 <string>] - Updates character information manually.";
+    return "<character:string> [--level <:int> --race <:string> --class <:string> --guild <:string> --spec1 <:string> --spec2 <:string>] - Updates character information manually.";
   }
 
   @Override

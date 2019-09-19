@@ -37,7 +37,7 @@ public class EPGPAwardLootCommandHandler extends AbstractEPGPCommandHandler {
       note = request.arguments().get(3);
     }
 
-    boolean createLoot = request.hasFlag("add-loot");
+    boolean createLoot = request.hasFlag("add-item");
 
     try (Transaction tx = context.database().transaction()) {
       performEPGPUpdate(context, tx, EPGPEventType.LOOT, 0, gp, lootName, null, note, ImmutableList.of(characterName), ImmutableList.of(), createLoot);
@@ -46,7 +46,7 @@ public class EPGPAwardLootCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<gp:int> <item-name:string> <character:string> [<additional-note:string>] [--add-loot] - Awards GP for looting an item.";
+    return "<gp:int> <item:string> <character:string> [<note:string>] [--add-item] - Awards GP for looting an item.";
   }
 
   @Override

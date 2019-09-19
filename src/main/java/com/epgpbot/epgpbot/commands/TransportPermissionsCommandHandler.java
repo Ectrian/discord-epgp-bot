@@ -9,7 +9,7 @@ import com.epgpbot.transport.User;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
-public class PermissionsCommandHandler extends CommandHandlerAbstract {
+public class TransportPermissionsCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
@@ -25,12 +25,12 @@ public class PermissionsCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "[@mention] - Displays available permissions.";
+    return "[<user:@ref>] - Displays permissions available to a Discord account.";
   }
 
   @Override
   public String command() {
-    return "permissions";
+    return "transport.permissions";
   }
 
   @Override

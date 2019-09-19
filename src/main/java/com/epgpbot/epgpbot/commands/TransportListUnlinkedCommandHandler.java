@@ -62,7 +62,7 @@ public class TransportListUnlinkedCommandHandler extends CommandHandlerAbstract 
 
   @Override
   public String help() {
-    return " - Lists Discord users not linked to player records.";
+    return " - Lists Discord accounts on your server not linked to any player.";
   }
 
   @Override

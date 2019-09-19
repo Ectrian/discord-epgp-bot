@@ -11,7 +11,7 @@ import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
-import com.epgpbot.util.TextTable;
+import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -55,7 +55,7 @@ public class InvinciblesStandingCommandHandler extends CommandHandlerAbstract {
         while (r.next()) {
           Map<String, Object> row = new HashMap<>();
           row.put("player", r.get("name", String.class));
-          row.put("lod_kills", r.get("kills", Long.class));
+          row.put("lod kills", r.get("kills", Long.class));
           row.put("invincibles", r.get("invincibles", Long.class));
           row.put("preference", r.get("loot_priority", Long.class));
           table.add(row);
@@ -63,16 +63,13 @@ public class InvinciblesStandingCommandHandler extends CommandHandlerAbstract {
       }
     }
 
-    context.reply(
-      "**Invincibles:**\n" +
-      "```\n" +
-      TextTable.format(
-        ImmutableList.of("player", "lod_kills", "invincibles", "preference"),
-        table,
-        ImmutableSet.of("invincibles", "lod_kills", "preference")
-      ) +
-      "```\n"
-    );
+    context.replyWithPages(
+        new TablePageSource(
+            "Invincibles",
+            table,
+            ImmutableList.of("player", "lod kills", "invincibles", "preference"),
+            ImmutableSet.of("invincibles", "lod kills", "preference"))
+          .setPerPage(20));
   }
 
   @Override

@@ -43,7 +43,7 @@ public class PlayerAddCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<name:string> - Creates a new player record.";
+    return "<player:string> - Adds a new player.";
   }
 
   @Override

@@ -131,7 +131,7 @@ public class EPGPTotalsCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[--sort <'EP'|'GP'|'ITEMS'|'PRIORITY'>] [--min-ep <count:int>] - Display total EP and GP earned.";
+    return "[--sort <'EP'|'GP'|'ITEMS'|'PRIORITY'(default)>] - Display EPGP standings with total EPGP earned.";
   }
 
   @Override

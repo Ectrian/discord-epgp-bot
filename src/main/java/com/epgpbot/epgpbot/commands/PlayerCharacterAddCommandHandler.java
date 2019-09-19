@@ -105,7 +105,7 @@ public class PlayerCharacterAddCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<player:string> <...character:string> [--no-validate] [--force] - Adds characters to a player record.";
+    return "<player:string> <...character:string> [--no-validate] [--force] - Links a character to a player.";
   }
 
   @Override

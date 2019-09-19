@@ -91,7 +91,7 @@ public class EPGPLogCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "[<'<all>'|character:string>] [--page <n:int>] [--limit <count:int>] [--type <...type:string>] [--loot <...loot:string>] - Displays the EPGP action log for a given character (current if omitted).";
+    return "[<'<all>'|character:string>][--type <...:string>] [--loot <...:string>] - Displays the EPGP action log for a given character.";
   }
 
   @Override

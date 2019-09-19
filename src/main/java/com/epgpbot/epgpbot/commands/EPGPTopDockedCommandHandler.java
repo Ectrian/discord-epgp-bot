@@ -16,7 +16,7 @@ import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-public class EPGPPenaltyStandingsCommandHandler extends AbstractEPGPCommandHandler {
+public class EPGPTopDockedCommandHandler extends AbstractEPGPCommandHandler {
   private static final String TOP_PENALTIES_QUERY = "" +
       "SELECT \r\n" +
       "    target_player_id,\r\n" +
@@ -66,7 +66,7 @@ public class EPGPPenaltyStandingsCommandHandler extends AbstractEPGPCommandHandl
 
   @Override
   public String help() {
-    return " - Prints out the most docked players.";
+    return " - Displays the most docked players.";
   }
 
   @Override

@@ -258,7 +258,7 @@ class InteractiveCompareListener implements ReactionListener {
   }
 }
 
-public class EPGPInteractiveCompareCommandHandler extends AbstractEPGPCommandHandler {
+public class EPGPCompareInteractiveCommandHandler extends AbstractEPGPCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     InteractiveCompareListener.send(context, request.arguments(), request.hasFlag("details"), Joiner.on(" ").join(request.flag("title")));
@@ -266,7 +266,7 @@ public class EPGPInteractiveCompareCommandHandler extends AbstractEPGPCommandHan
 
   @Override
   public String help() {
-    return "<...character:string> [--details] [--title <string>] - Compares EPGP across multiple characters. Users may react/un-react to add themselves to the comparison.";
+    return "<...character:string> [--details] [--title <:string>] - Compares EPGP across multiple characters. Users may react/un-react to add themselves to the comparison.";
   }
 
   @Override

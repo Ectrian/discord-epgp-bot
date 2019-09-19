@@ -25,33 +25,33 @@ import com.epgpbot.epgpbot.commands.EPGPAwardRaidCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPAwardStandbyCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCompareCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPDecayAdjustHandler;
+import com.epgpbot.epgpbot.commands.EPGPRewriteHistoryCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPDecayCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPDockCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPImportCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPIntegrityCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPInteractiveCompareCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPCheckDBIntegrityCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPCompareInteractiveCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPLogCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPOfficerLogCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPPenaltyStandingsCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPTopDockedCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPStandingsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTotalsCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildOfficersCommandHandler;
-import com.epgpbot.epgpbot.commands.GuildOnlineCommandHandler;
+import com.epgpbot.epgpbot.commands.GuildMembersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildSyncCommandHandler;
 import com.epgpbot.epgpbot.commands.HelpCommandHandler;
 import com.epgpbot.epgpbot.commands.InvinciblesStandingCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemLinkCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemSearchCommandHandler;
-import com.epgpbot.epgpbot.commands.LootAliasCommandHandler;
-import com.epgpbot.epgpbot.commands.LootMergeCommandHandler;
-import com.epgpbot.epgpbot.commands.LootStatsCommandHandler;
-import com.epgpbot.epgpbot.commands.PermissionsCommandHandler;
+import com.epgpbot.epgpbot.commands.ItemAliasCommandHandler;
+import com.epgpbot.epgpbot.commands.ItemMergeCommandHandler;
+import com.epgpbot.epgpbot.commands.ItemStatsCommandHandler;
+import com.epgpbot.epgpbot.commands.TransportPermissionsCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerAddCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerCharacterAddCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerCharacterListCommandHandler;
-import com.epgpbot.epgpbot.commands.PlayerCreepCommandHandler;
-import com.epgpbot.epgpbot.commands.PlayerLinkCommandHandler;
+import com.epgpbot.epgpbot.commands.PlayerCharacterOnlineCommandHandler;
+import com.epgpbot.epgpbot.commands.PlayerTransportLinkCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerSyncCommandHandler;
 import com.epgpbot.epgpbot.commands.PlayerTransportListCommandHandler;
 import com.epgpbot.epgpbot.commands.QuitCommandHandler;
@@ -95,6 +95,9 @@ public class EventHandler implements AutoCloseable {
     handlers.add(new CharacterWhoCanPlayCommandHandler());
     handlers.add(new CharacterListCommandHandler());
     handlers.add(new CharacterAltsCommandHandler());
+    if (config.game_armory_type == ArmoryType.NONE) {
+      handlers.add(new CharacterUpdateCommandHandler());
+    }
 
     handlers.add(new TestCommandHandler());
 
@@ -107,15 +110,14 @@ public class EventHandler implements AutoCloseable {
       handlers.add(new InvinciblesStandingCommandHandler());
     }
 
-    handlers.add(new LootMergeCommandHandler());
-    handlers.add(new LootAliasCommandHandler());
-    handlers.add(new LootStatsCommandHandler());
+    handlers.add(new ItemMergeCommandHandler());
+    handlers.add(new ItemAliasCommandHandler());
+    handlers.add(new ItemStatsCommandHandler());
 
-    handlers.add(new PermissionsCommandHandler());
     handlers.add(new PlayerAddCommandHandler());
+    handlers.add(new PlayerTransportLinkCommandHandler());
     handlers.add(new PlayerCharacterAddCommandHandler());
     handlers.add(new PlayerCharacterListCommandHandler());
-    handlers.add(new PlayerLinkCommandHandler());
     handlers.add(new PlayerTransportListCommandHandler());
 
     handlers.add(new QuitCommandHandler());
@@ -125,17 +127,15 @@ public class EventHandler implements AutoCloseable {
     handlers.add(new TransportWhoisCommandHandler());
     handlers.add(new TransportListUnlinkedCommandHandler());
     handlers.add(new TransportListNoRolesCommandHandler());
+    handlers.add(new TransportPermissionsCommandHandler());
 
     if (config.game_armory_type != ArmoryType.NONE) {
       handlers.add(new CharacterSyncCommandHandler());
       handlers.add(new GuildOfficersCommandHandler());
-      handlers.add(new GuildOnlineCommandHandler());
+      handlers.add(new GuildMembersCommandHandler());
       handlers.add(new GuildSyncCommandHandler());
-      handlers.add(new PlayerCreepCommandHandler());
+      handlers.add(new PlayerCharacterOnlineCommandHandler());
       handlers.add(new PlayerSyncCommandHandler());
-    }
-    else {
-      handlers.add(new CharacterUpdateCommandHandler());
     }
 
     switch (config.loot_method) {
@@ -153,11 +153,11 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPTotalsCommandHandler());
         handlers.add(new EPGPCompareCommandHandler());
         handlers.add(new EPGPImportCommandHandler());
-        handlers.add(new EPGPInteractiveCompareCommandHandler());
-        handlers.add(new EPGPDecayAdjustHandler());
-        handlers.add(new EPGPIntegrityCommandHandler());
+        handlers.add(new EPGPCompareInteractiveCommandHandler());
+        handlers.add(new EPGPRewriteHistoryCommandHandler());
+        handlers.add(new EPGPCheckDBIntegrityCommandHandler());
         handlers.add(new EPGPAdjustCommandHandler());
-        handlers.add(new EPGPPenaltyStandingsCommandHandler());
+        handlers.add(new EPGPTopDockedCommandHandler());
         break;
       case DKP:
         break;

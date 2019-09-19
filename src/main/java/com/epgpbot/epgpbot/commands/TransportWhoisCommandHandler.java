@@ -43,7 +43,7 @@ public class TransportWhoisCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "@mention - Displays the player name for a Discord user.";
+    return "<user:@ref> - Displays the player linked to a Discord account.";
   }
 
   @Override
