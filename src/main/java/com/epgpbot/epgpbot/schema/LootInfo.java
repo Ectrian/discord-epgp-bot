@@ -58,7 +58,7 @@ public class LootInfo {
     if (itemId < 0) {
       return null;
     }
-    String url = String.format("https://items.classicmaps.xyz/%d.png", itemId);
+    String url = String.format("https://items.classicmaps.xyz/%d.png", itemId);  // TODO: Localize.
     InputStream file = new URL(url).openStream();
     return file;
   }

@@ -51,6 +51,18 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
   }
 
   protected Long getLootId(Transaction tx, String name, boolean create) throws Exception {
+    try {
+      long id = Long.parseLong(name);
+      try (Statement q = tx.prepare("SELECT loot_id FROM loot_game_info WHERE game_id = :id;")) {
+        q.bind("id", id);
+        try (Cursor r = q.executeFetch()) {
+          if (r.next()) {
+            return r.get("loot_id", Long.class);
+          }
+        }
+      }
+    } catch (NumberFormatException e) {}
+
     try (Statement q = tx.prepare("SELECT id FROM loot WHERE name = :name;")) {
       q.bind("name", name);
       try (Cursor r = q.executeFetch()) {
