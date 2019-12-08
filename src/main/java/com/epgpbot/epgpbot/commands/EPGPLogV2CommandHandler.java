@@ -386,7 +386,8 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         filters.add("l.source_player_id IN " + Statement.array("source_player_ids", sourcePlayerIds.get()));
       }
 
-      if (eventTypes.isPresent()) {
+      if (eventTypes.isPresent() &&
+          !eventTypes.get().isEmpty()) {
         filters.add("l.type IN " + Statement.array("event_types", eventTypes.get()));
       }
 
@@ -440,7 +441,8 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         q.bindArray("source_player_ids", sourcePlayerIds.get());
       }
 
-      if (eventTypes.isPresent()) {
+      if (eventTypes.isPresent() &&
+          !eventTypes.get().isEmpty()) {
         Set<Integer> eventTypeOrdinals = eventTypes
             .get()
             .stream()

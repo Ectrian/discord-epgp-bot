@@ -1,6 +1,7 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,45 +94,60 @@ public class EPGPUndoCommandHandler extends AbstractEPGPCommandHandler {
     }
   }
 
+  public void handleUndo(CommandContext context, Transaction tx, long id) throws Exception {
+    try (Statement q = tx.prepare("SELECT * FROM epgp_log WHERE id = :id;")) {
+      q.bind("id", id);
+      try (Cursor r = q.executeFetch()) {
+        if (!r.next()) {
+          context.abort("Invalid ID '%d'.", id);
+        }
+
+        Optional<Long> undoneBy = r.getNullable("undone_by", Long.class);
+        if (undoneBy.isPresent()) {
+          context.abort("Operation has already been undone. To undo an undo, simply repeat the original operation.");
+        }
+
+        Optional<Long> undoes = r.getNullable("undoes", Long.class);
+        if (undoes.isPresent()) {
+          context.abort("UNDO operations cannot be undone. To undo an undo, simply repeat the original operation.");
+        }
+
+        EPGPEventType eventType = EPGPEventType.values()[r.get("type", Integer.class)];
+        if (eventType == EPGPEventType.DECAY) {
+          context.abort("DECAY operations cannot be undone.");
+        }
+
+        long undoID = performUndo(context, tx, r);
+        try (Statement q2 = tx.prepare("UPDATE epgp_log SET undone_by = :undo_id WHERE id = :id;")) {
+          q2.bind("undo_id", undoID);
+          q2.bind("id", id);
+          q2.executeUpdate();
+        }
+      }
+    }
+  }
+
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    Optional<Long> id = getLongArg(request, 0);
+    List<Long> ids = new ArrayList<>();
 
-    if (!id.isPresent()) {
+    for (int i = 0; i < request.arguments().size(); i++) {
+      Optional<Long> id = getLongArg(request, i);
+      if (!id.isPresent()) {
+        sendCorrectUsage(context);
+        return;
+      }
+      ids.add(id.get());
+    }
+
+    if (ids.isEmpty()) {
       sendCorrectUsage(context);
       return;
     }
 
     try (Transaction tx = context.database().transaction()) {
-      try (Statement q = tx.prepare("SELECT * FROM epgp_log WHERE id = :id;")) {
-        q.bind("id", id.get());
-        try (Cursor r = q.executeFetch()) {
-          if (!r.next()) {
-            context.abort("Invalid ID '%d'.", id.get());
-          }
-
-          Optional<Long> undoneBy = r.getNullable("undone_by", Long.class);
-          if (undoneBy.isPresent()) {
-            context.abort("Operation has already been undone. To undo an undo, simply repeat the original operation.");
-          }
-
-          Optional<Long> undoes = r.getNullable("undoes", Long.class);
-          if (undoes.isPresent()) {
-            context.abort("UNDO operations cannot be undone. To undo an undo, simply repeat the original operation.");
-          }
-
-          EPGPEventType eventType = EPGPEventType.values()[r.get("type", Integer.class)];
-          if (eventType == EPGPEventType.DECAY) {
-            context.abort("DECAY operations cannot be undone.");
-          }
-
-          long undoID = performUndo(context, tx, r);
-          try (Statement q2 = tx.prepare("UPDATE epgp_log SET undone_by = :undo_id WHERE id = :id;")) {
-            q2.bind("undo_id", undoID);
-            q2.bind("id", id.get());
-            q2.executeUpdate();
-          }
-        }
+      for (long id : ids) {
+        handleUndo(context, tx, id);
       }
     }
 
@@ -140,7 +156,7 @@ public class EPGPUndoCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<id:int> - Reverses an EPGP operation.";
+    return "<...id:int> - Reverses an EPGP operation.";
   }
 
   @Override
