@@ -100,6 +100,18 @@ public class SQLStatement implements Statement {
     return this;
   }
 
+  @Override
+  public <T> Statement bindArray(String parameter, Iterable<T> values) throws Exception {
+    int i = 0;
+
+    for (T value : values) {
+      bind(String.format("%s_%d", parameter, i), value);
+      i++;
+    }
+
+    return this;
+  }
+
   private static final String parse(String query, Map<String, int[]> paramMap) {
     Map<String, LinkedList<Integer>> intermediateParams = new HashMap<>();
 

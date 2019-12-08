@@ -1,6 +1,10 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
@@ -47,7 +51,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
 
   // Tries to infer the player's identity based on any DB links or their discord username.
   // NOTE: NOT RELIABLE - PLAYERS CAN PRETEND TO BE OTHERS! DO NOT USE FOR PERMISSIONS!
-  protected PlayerId getInferredPlayer(Transaction tx, CommandContext context) throws Exception {
+  protected static PlayerId getInferredPlayer(Transaction tx, CommandContext context) throws Exception {
     if (context.user().hasPlayer()) {
       return new PlayerId(context.user().playerId(), context.user().playerName(), context.user().transportUserId());
     }
@@ -64,6 +68,16 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
     return null;
   }
 
+  public static String formatDate(long timestamp) {
+    if (timestamp < 0) {
+      return "Never";
+    }
+    Date date = new Date(timestamp * 1000);
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy h:mm a z", Locale.ENGLISH);
+    sdf.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+    return sdf.format(date);
+  }
+
   // Returns s with first character uppercased.
   protected String ucfirst(String s) {
     if (s.length() == 0) {
@@ -78,7 +92,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
         this.help()));
   }
 
-  protected void sendError(CommandContext context, String format, Object ...args) throws IOException {
+  protected static void sendError(CommandContext context, String format, Object ...args) throws IOException {
     context.reply(String.format("*Failure*: " + format, args));
   }
 
@@ -118,7 +132,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
     }
   }
 
-  protected PlayerId getPlayerIdForCharacter(Transaction tx, String characterName) throws Exception {
+  protected static PlayerId getPlayerIdForCharacter(Transaction tx, String characterName) throws Exception {
     try (Statement q = tx.prepare("SELECT p.name, c.player_id FROM characters AS c JOIN players AS p ON p.id = c.player_id WHERE lower(c.name) = :name AND c.deleted = 0 AND c.player_id IS NOT NULL;")) {
       q.bind("name", characterName.toLowerCase());
       try (Cursor r = q.executeFetch()) {

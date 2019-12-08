@@ -72,4 +72,17 @@ public class CommandContext {
   public void replyf(String message, Object ...args) throws IOException {
     source.reply(String.format(message, args));
   }
+
+  public void errorf(String format, Object ...args) throws IOException {
+    reply(String.format("*Failure*: " + format, args));
+  }
+
+  public void abort(String format, Object ...args) throws IOException {
+    errorf(format, args);
+    abort();
+  }
+
+  public void abort() {
+    throw new AbortException();
+  }
 }

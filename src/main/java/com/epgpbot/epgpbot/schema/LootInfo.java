@@ -7,7 +7,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
@@ -131,11 +133,41 @@ public class LootInfo {
   }
 
   public static LootInfo getByName(Transaction tx, String name) throws Exception {
-    // TODO: Support aliases.
     try (Statement q = tx.prepare(String.format(GET_QUERY, "lower(l.name) = :key"))) {
       q.bind("key", name.toLowerCase());
-      return get(tx, q);
+      LootInfo out = get(tx, q);
+      if (out != null) {
+        return out;
+      }
     }
+
+    try (Statement q = tx.prepare(String.format(GET_ALIAS_QUERY, "lower(la.name) = :key"))) {
+      q.bind("key", name.toLowerCase());
+      LootInfo out = get(tx, q);
+      if (out != null) {
+        return out;
+      }
+    }
+
+    return null;
+  }
+
+  public static LootInfo searchForSingleMatch(Transaction tx, String query) throws Exception {
+    List<LootInfo> matches = search(tx, query);
+
+    if (matches.isEmpty()) {
+      return null;
+    }
+
+    if (matches.size() == 1) {
+      return matches.get(0);
+    }
+
+    if (matches.get(0).name.toLowerCase().equals(query.toLowerCase())) {
+      return matches.get(0);
+    }
+
+    return null;
   }
 
   public static List<LootInfo> search(Transaction tx, String query) throws Exception {
@@ -144,6 +176,7 @@ public class LootInfo {
       return ImmutableList.of(getByItemId(tx, Long.parseLong(query)));
     }
 
+    Set<Long> ids = new HashSet<>();
     List<LootInfo> fuzzyMatches = new ArrayList<>();
     List<LootInfo> exactMatches = new ArrayList<>();
 
@@ -154,21 +187,27 @@ public class LootInfo {
       try (Cursor r = q.executeFetch()) {
         while (r.next()) {
           LootInfo out = readNext(r);
-          fuzzyMatches.add(out);
+          if (!ids.contains(out.lootId)) {
+            fuzzyMatches.add(out);
+            ids.add(out.lootId);
+          }
         }
       }
     }
 
     try (Statement q = tx.prepare(
-        String.format(GET_QUERY, "lgi.game_id IS NOT NULL AND l.name LIKE :query ESCAPE '!'"))) {
+        String.format(GET_QUERY, "l.name LIKE :query ESCAPE '!'"))) {
       q.bind("query", "%" + query + "%");
       try (Cursor r = q.executeFetch()) {
         while (r.next()) {
           LootInfo out = readNext(r);
-          if (query.toLowerCase().equals(out.name.toLowerCase())) {
-            exactMatches.add(out);
-          } else {
-            fuzzyMatches.add(out);
+          if (!ids.contains(out.lootId)) {
+            if (query.toLowerCase().equals(out.name.toLowerCase())) {
+              exactMatches.add(out);
+            } else {
+              fuzzyMatches.add(out);
+            }
+            ids.add(out.lootId);
           }
         }
       }

@@ -31,8 +31,7 @@ import com.epgpbot.epgpbot.commands.EPGPDockCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPImportCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCheckDBIntegrityCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCompareInteractiveCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPLogCommandHandler;
-import com.epgpbot.epgpbot.commands.EPGPOfficerLogCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPLogV2CommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTopDockedCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPStandingsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTotalsCommandHandler;
@@ -147,8 +146,7 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPAwardRaidCommandHandler());
         handlers.add(new EPGPAwardIncentiveCommandHandler());
         handlers.add(new EPGPAwardStandbyCommandHandler());
-        handlers.add(new EPGPLogCommandHandler());
-        handlers.add(new EPGPOfficerLogCommandHandler());
+        handlers.add(new EPGPLogV2CommandHandler());
         handlers.add(new EPGPStandingsCommandHandler());
         handlers.add(new EPGPTotalsCommandHandler());
         handlers.add(new EPGPCompareCommandHandler());
@@ -174,14 +172,6 @@ public class EventHandler implements AutoCloseable {
 
   public Database getDatabase() {
     return this.db;
-  }
-
-  public void handleReactionAdded(
-      Transport transport,
-      Channel source,
-      User user,
-      String reaction) {
-
   }
 
   public void handleIncomingMessage(
@@ -229,6 +219,8 @@ public class EventHandler implements AutoCloseable {
       handler.handle(context, request);
     } catch (IOException e) {
       throw e;
+    } catch (AbortException e) {
+      // No-op.
     } catch (Exception e) {
       source.reply("An internal error occurred processing your request. Please try again later.");
       e.printStackTrace(System.err);
