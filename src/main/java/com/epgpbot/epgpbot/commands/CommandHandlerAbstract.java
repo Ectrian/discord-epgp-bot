@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import com.epgpbot.database.Cursor;
@@ -11,7 +12,6 @@ import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
-import com.google.common.base.Optional;
 
 public abstract class CommandHandlerAbstract implements CommandHandler {
   public static class PlayerId {
@@ -40,12 +40,12 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
 
   public Optional<Long> getLongArg(Request request, int offset) {
     if (offset >= request.arguments().size()) {
-      return Optional.absent();
+      return Optional.empty();
     }
     try {
       return Optional.of(Long.parseLong(request.arguments().get(offset)));
     } catch (NumberFormatException e) {
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 

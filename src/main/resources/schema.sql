@@ -99,9 +99,22 @@ CREATE TABLE epgp_log (
   ep_delta int(64) not null default 0,
   gp_delta int(64) not null default 0,
   note text default null,
+  undoes int(64) unsigned default null,
+  undone_by int(64) unsigned default null,
   FOREIGN KEY(target_character_id) REFERENCES characters(id) ON DELETE SET NULL,
   FOREIGN KEY(target_player_id) REFERENCES players(id) ON DELETE RESTRICT,
   FOREIGN KEY(source_player_id) REFERENCES players(id) ON DELETE RESTRICT,
   FOREIGN KEY(loot_id) REFERENCES loot(id) ON DELETE RESTRICT,
+  FOREIGN KEY(undoes) REFERENCES epgp_log(id) ON DELETE SET NULL,
+  FOREIGN KEY(undone_by) REFERENCES epgp_log(id) ON DELETE SET NULL,
   PRIMARY KEY(id)
 );
+
+/*
+MIGRATION:
+
+ALTER TABLE epgp_log ADD undoes int(64) unsigned default null;
+ALTER TABLE epgp_log ADD undone_by int(64) unsigned default null;
+ALTER TABLE epgp_log ADD CONSTRAINT fk_undoes FOREIGN KEY (undoes) REFERENCES epgp_log(id) ON DELETE SET NULL;
+ALTER TABLE epgp_log ADD CONSTRAINT fk_undone_by FOREIGN KEY (undone_by) REFERENCES epgp_log(id) ON DELETE SET NULL;
+*/

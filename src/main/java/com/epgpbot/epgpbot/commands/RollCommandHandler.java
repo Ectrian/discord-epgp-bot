@@ -12,8 +12,8 @@ public class RollCommandHandler extends CommandHandlerAbstract {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     SecureRandom prng = new SecureRandom();
-    long min = getLongArg(request, 0).or(1L);
-    long max = getLongArg(request, 1).or(100L);
+    long min = getLongArg(request, 0).orElse(1L);
+    long max = getLongArg(request, 1).orElse(100L);
 
     if (min < 0 || max < 0 || min >= max) {
       sendCorrectUsage(context);

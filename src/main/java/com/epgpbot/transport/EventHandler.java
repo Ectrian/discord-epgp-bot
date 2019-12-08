@@ -35,6 +35,7 @@ import com.epgpbot.epgpbot.commands.EPGPLogV2CommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTopDockedCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPStandingsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTotalsCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPUndoCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildOfficersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildMembersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildSyncCommandHandler;
@@ -156,6 +157,7 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPCheckDBIntegrityCommandHandler());
         handlers.add(new EPGPAdjustCommandHandler());
         handlers.add(new EPGPTopDockedCommandHandler());
+        handlers.add(new EPGPUndoCommandHandler());
         break;
       case DKP:
         break;

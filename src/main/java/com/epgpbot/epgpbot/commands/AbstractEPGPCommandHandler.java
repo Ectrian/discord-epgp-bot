@@ -26,8 +26,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract {
   protected long getSourcePlayerId(CommandContext context) throws Exception {
     if (!context.user().hasPlayer()) {
-      context.reply("You must link yourself to a player using !player.link before using this command.");
-      throw new Exception("No user linked.");
+      context.abort("You must link yourself to a player using !player.link before using this command.");
     }
     return context.user().playerId();
   }

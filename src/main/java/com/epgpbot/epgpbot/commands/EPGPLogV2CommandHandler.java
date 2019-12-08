@@ -230,6 +230,13 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         row.put("reason", first.eventType);
       }
 
+      if (first.undoes.isPresent()) {
+        row.put("reason", String.format("%s (UNDO)", row.get("reason")));
+      }
+      if (first.undoneBy.isPresent()) {
+        row.put("reason", String.format("%s*", row.get("reason")));
+      }
+
       return row;
     }
 
@@ -279,6 +286,8 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
     public long epDelta;
     public long gpDelta;
     public Optional<String> note;
+    public Optional<Long> undoneBy;
+    public Optional<Long> undoes;
 
     public String getFormattedDate() {
       return formatDate(timestamp);
@@ -301,6 +310,8 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
       entry.lootName = r.getNullable("loot_name", String.class);
       entry.lootId = r.getNullable("loot_id", Long.class);
       entry.raidType = r.getNullable("raid_type", Integer.class).map((i) -> RaidType.values()[i]);
+      entry.undoes = r.getNullable("undoes", Long.class);
+      entry.undoneBy = r.getNullable("undone_by", Long.class);
       return entry;
     }
 
@@ -326,7 +337,11 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         return false;  // Keep row size small.
       }
 
-      return (other.epDelta == this.epDelta) &&
+      return (!other.undoneBy.isPresent()) &&
+             (!this.undoneBy.isPresent()) &&
+             (!other.undoes.isPresent()) &&
+             (!this.undoes.isPresent()) &&
+             (other.epDelta == this.epDelta) &&
              (other.gpDelta == this.gpDelta) &&
              (other.note.equals(this.note)) &&
              (other.raidType.equals(this.raidType)) &&
@@ -346,6 +361,7 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
     public Optional<Set<EPGPEventType>> eventTypes = Optional.empty();
     public Optional<Set<RaidType>> raidTypes = Optional.empty();
     public Optional<Set<Long>> lootIds = Optional.empty();
+    public boolean includeUndos = false;
 
     private Statement query(Transaction tx, long offset, long limit) throws Exception {
       List<String> filters = new ArrayList<>();
@@ -372,6 +388,11 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
 
       if (eventTypes.isPresent()) {
         filters.add("l.type IN " + Statement.array("event_types", eventTypes.get()));
+      }
+
+      if (!includeUndos) {
+        filters.add("l.undoes IS NULL");
+        filters.add("l.undone_by IS NULL");
       }
 
 
@@ -520,6 +541,12 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         filter.eventTypes = Optional.of(eventTypes);
       }
 
+      if (request.hasFlag("show")) {
+        if (request.flag("show").contains("undo")) {
+          filter.includeUndos = true;
+        }
+      }
+
       if (!context.user().hasPermission(PermissionType.AUDIT_EPGP) ||
           !request.hasFlag("show-hidden")) {
         filter.eventTypes.get().remove(EPGPEventType.HIDDEN);
@@ -583,6 +610,15 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         }
       }
 
+      if (!includeUndos) {
+        if (entry.undoes.isPresent()) {
+          return false;
+        }
+        if (entry.undoneBy.isPresent()) {
+          return false;
+        }
+      }
+
       return true;
     }
 
@@ -630,7 +666,7 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
   @Override
   public String help() {
     // Undocumented: --show-hidden
-    return "[<<...character:string>|'<all>'>] [--id <...id:int>] [--type <...type:string>] [--officer <...character:string>] [--loot <...loot:string> [--show <...{id|character|note}>] - Displays EPGP logs.";
+    return "[<<...character:string>|'<all>'>] [--id <...id:int>] [--type <...type:string>] [--officer <...character:string>] [--loot <...loot:string> [--show <...{id|character|note|undo}>] - Displays EPGP logs.";
   }
 
   @Override
