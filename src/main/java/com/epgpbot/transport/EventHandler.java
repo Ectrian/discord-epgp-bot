@@ -32,6 +32,7 @@ import com.epgpbot.epgpbot.commands.EPGPImportCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCheckDBIntegrityCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCompareInteractiveCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPLogV2CommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPLootBackfillCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTopDockedCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPStandingsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTotalsCommandHandler;
@@ -40,10 +41,10 @@ import com.epgpbot.epgpbot.commands.GuildOfficersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildMembersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildSyncCommandHandler;
 import com.epgpbot.epgpbot.commands.HelpCommandHandler;
-import com.epgpbot.epgpbot.commands.InvinciblesStandingCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemLinkCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemSearchCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemAliasCommandHandler;
+import com.epgpbot.epgpbot.commands.ItemDistributionCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemMergeCommandHandler;
 import com.epgpbot.epgpbot.commands.ItemStatsCommandHandler;
 import com.epgpbot.epgpbot.commands.TransportPermissionsCommandHandler;
@@ -57,11 +58,15 @@ import com.epgpbot.epgpbot.commands.PlayerTransportListCommandHandler;
 import com.epgpbot.epgpbot.commands.QuitCommandHandler;
 import com.epgpbot.epgpbot.commands.RollCommandHandler;
 import com.epgpbot.epgpbot.commands.TestCommandHandler;
+import com.epgpbot.epgpbot.commands.TimeResolveCommandHandler;
+import com.epgpbot.epgpbot.commands.TransportUidCommandHandler;
 import com.epgpbot.epgpbot.commands.TransportListNoRolesCommandHandler;
 import com.epgpbot.epgpbot.commands.TransportListUnlinkedCommandHandler;
 import com.epgpbot.epgpbot.commands.TransportWhoisCommandHandler;
-import com.epgpbot.epgpbot.schema.game.Expansion;
+import com.epgpbot.util.Argument;
 import com.epgpbot.util.CommandParser;
+
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 
 public class EventHandler implements AutoCloseable {
   private final List<CommandHandler> handlers;
@@ -106,13 +111,10 @@ public class EventHandler implements AutoCloseable {
     handlers.add(new ItemLinkCommandHandler());
     handlers.add(new ItemSearchCommandHandler());
 
-    if (config.game_expansion == Expansion.WRATH_OF_THE_LICH_KING) {
-      handlers.add(new InvinciblesStandingCommandHandler());
-    }
-
     handlers.add(new ItemMergeCommandHandler());
     handlers.add(new ItemAliasCommandHandler());
     handlers.add(new ItemStatsCommandHandler());
+    handlers.add(new ItemDistributionCommandHandler());
 
     handlers.add(new PlayerAddCommandHandler());
     handlers.add(new PlayerTransportLinkCommandHandler());
@@ -128,6 +130,9 @@ public class EventHandler implements AutoCloseable {
     handlers.add(new TransportListUnlinkedCommandHandler());
     handlers.add(new TransportListNoRolesCommandHandler());
     handlers.add(new TransportPermissionsCommandHandler());
+    handlers.add(new TransportUidCommandHandler());
+
+    handlers.add(new TimeResolveCommandHandler());
 
     if (config.game_armory_type != ArmoryType.NONE) {
       handlers.add(new CharacterSyncCommandHandler());
@@ -158,6 +163,7 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPAdjustCommandHandler());
         handlers.add(new EPGPTopDockedCommandHandler());
         handlers.add(new EPGPUndoCommandHandler());
+        handlers.add(new EPGPLootBackfillCommandHandler());
         break;
       case DKP:
         break;
@@ -219,8 +225,16 @@ public class EventHandler implements AutoCloseable {
 
     try {
       handler.handle(context, request);
+    } catch (InsufficientPermissionException e) {
+      context.replyf("*Failure*: For this feature to work, the server administrator must grant {%s}.",
+          e.getPermission().toString());
     } catch (IOException e) {
       throw e;
+    } catch (Argument.InvalidArgumentException e) {
+      context.replyf("*Incorrect usage*: **%s** %s\n%s\n",
+          handler.command(),
+          handler.help(),
+          e.getMessage());
     } catch (AbortException e) {
       // No-op.
     } catch (Exception e) {

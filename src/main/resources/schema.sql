@@ -90,6 +90,7 @@ INSERT INTO loot_game_info (
 CREATE TABLE epgp_log (
   id int(64) unsigned not null auto_increment,
   timestamp int(64) unsigned not null,
+  action_timestamp int(64) unsigned not null,
   target_player_id int(64) unsigned not null,
   target_character_id int(64) unsigned default null,
   source_player_id int(64) unsigned not null,
@@ -117,4 +118,6 @@ ALTER TABLE epgp_log ADD undoes int(64) unsigned default null;
 ALTER TABLE epgp_log ADD undone_by int(64) unsigned default null;
 ALTER TABLE epgp_log ADD CONSTRAINT fk_undoes FOREIGN KEY (undoes) REFERENCES epgp_log(id) ON DELETE SET NULL;
 ALTER TABLE epgp_log ADD CONSTRAINT fk_undone_by FOREIGN KEY (undone_by) REFERENCES epgp_log(id) ON DELETE SET NULL;
+ALTER TABLE epgp_log ADD action_timestamp int(64) unsigned not null;
+UPDATE epgp_log SET action_timestamp = timestamp;
 */

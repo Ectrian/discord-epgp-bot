@@ -8,6 +8,7 @@ import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.epgpbot.transport.User;
+import com.epgpbot.util.PlayerId;
 import com.google.common.collect.ImmutableList;
 
 public class PlayerTransportLinkCommandHandler extends CommandHandlerAbstract {

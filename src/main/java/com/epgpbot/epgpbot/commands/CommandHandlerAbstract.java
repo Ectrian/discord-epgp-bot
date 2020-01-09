@@ -12,32 +12,9 @@ import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
+import com.epgpbot.util.PlayerId;
 
 public abstract class CommandHandlerAbstract implements CommandHandler {
-  public static class PlayerId {
-    public final long id;
-    public final String name;
-    public final String transportUserId;
-
-    public PlayerId(long id, String name, String transportUserId) {
-      this.id = id;
-      this.name = name;
-      this.transportUserId = transportUserId;
-    }
-
-    public static PlayerId withTransportInfo(Transaction tx, long id, String name) throws Exception {
-      try (Statement q = tx.prepare("SELECT id FROM transport_users WHERE player_id = :id;")) {
-        q.bind("id", id);
-        try (Cursor r = q.executeFetch()) {
-          if (!r.next()) {
-            return new PlayerId(id, name, null);
-          }
-          return new PlayerId(id, name, r.get("id", String.class));
-        }
-      }
-    }
-  }
-
   public Optional<Long> getLongArg(Request request, int offset) {
     if (offset >= request.arguments().size()) {
       return Optional.empty();
@@ -51,7 +28,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
 
   // Tries to infer the player's identity based on any DB links or their discord username.
   // NOTE: NOT RELIABLE - PLAYERS CAN PRETEND TO BE OTHERS! DO NOT USE FOR PERMISSIONS!
-  protected static PlayerId getInferredPlayer(Transaction tx, CommandContext context) throws Exception {
+  public static PlayerId getInferredPlayer(Transaction tx, CommandContext context) throws Exception {
     if (context.user().hasPlayer()) {
       return new PlayerId(context.user().playerId(), context.user().playerName(), context.user().transportUserId());
     }
@@ -60,7 +37,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
       q.bind("name", context.user().transportUserName());
       try (Cursor r = q.executeFetch()) {
         if (r.next()) {
-          return PlayerId.withTransportInfo(tx, r.get("id", Long.class), r.get("name", String.class));
+          return PlayerId.withTransportInfo(tx, r.get("id", Long.class), -1, r.get("name", String.class));
         }
       }
     }
@@ -86,7 +63,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
     return s.substring(0, 1).toUpperCase() + s.substring(1);
   }
 
-  protected void sendCorrectUsage(CommandContext context) throws IOException {
+  public void sendCorrectUsage(CommandContext context) throws IOException {
     context.reply(String.format("*Incorrect usage*: **%s** %s",
         this.command(),
         this.help()));
@@ -103,7 +80,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
         if (!r.next()) {
           return null;
         }
-        return PlayerId.withTransportInfo(tx, r.get("id", Long.class), r.get("name", String.class));
+        return PlayerId.withTransportInfo(tx, r.get("id", Long.class), -1, r.get("name", String.class));
       }
     }
   }
@@ -115,7 +92,7 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
         if (!r.next()) {
           return null;
         }
-        return PlayerId.withTransportInfo(tx, r.get("id", Long.class), r.get("name", String.class));
+        return PlayerId.withTransportInfo(tx, r.get("id", Long.class), -1, r.get("name", String.class));
       }
     }
   }
@@ -132,16 +109,21 @@ public abstract class CommandHandlerAbstract implements CommandHandler {
     }
   }
 
-  protected static PlayerId getPlayerIdForCharacter(Transaction tx, String characterName) throws Exception {
+  public static PlayerId getPlayerIdForCharacter(Transaction tx, String characterName) throws Exception {
     try (Statement q = tx.prepare("SELECT p.name, c.player_id FROM characters AS c JOIN players AS p ON p.id = c.player_id WHERE lower(c.name) = :name AND c.deleted = 0 AND c.player_id IS NOT NULL;")) {
       q.bind("name", characterName.toLowerCase());
       try (Cursor r = q.executeFetch()) {
         if (!r.next()) {
           return null;
         }
-        return PlayerId.withTransportInfo(tx, r.get("player_id", Long.class), r.get("name", String.class));
+        return PlayerId.withTransportInfo(tx, r.get("player_id", Long.class), -1, r.get("name", String.class));
       }
     }
+  }
+
+  @Override
+  public String advancedHelp() {
+    return null;
   }
 
   @Override

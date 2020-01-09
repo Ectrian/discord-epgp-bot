@@ -2,7 +2,6 @@ package com.epgpbot.database.mysql;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,48 +13,73 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.epgpbot.database.AbstractStatement;
 import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
 
-public class SQLStatement implements Statement {
+public class SQLStatement extends AbstractStatement {
+  private final SQLTransaction tx;
   private final PreparedStatement statement;
   private final Map<String, int[]> parameters;
 
-  public SQLStatement(Connection connection, String statement) throws SQLException {
+  public SQLStatement(SQLTransaction tx, String statement) throws SQLException {
     this.parameters = new HashMap<>();
-    this.statement = connection.prepareStatement(parse(statement, this.parameters),
-        java.sql.Statement.RETURN_GENERATED_KEYS);
+    this.tx = tx;
+    this.statement = tx.connection().prepareStatement(
+        parse(statement, this.parameters),
+        java.sql.Statement.RETURN_GENERATED_KEYS
+    );
   }
 
   @Override
   public void close() throws Exception {
-    statement.close();
+    try {
+      statement.close();
+    } catch (Exception e) {
+      tx.setFailed(e);
+      throw e;
+    }
   }
 
   @Override
   public Cursor executeFetch() throws Exception {
-    return new SQLCursor(statement.executeQuery());
+    try {
+      return new SQLCursor(tx, statement.executeQuery());
+    } catch (Exception e) {
+      tx.setFailed(e);
+      throw e;
+    }
   }
 
   @Override
   public void executeUpdate() throws Exception {
-    statement.executeUpdate();
+    try {
+      statement.executeUpdate();
+    } catch (Exception e) {
+      tx.setFailed(e);
+      throw e;
+    }
   }
 
   @Override
   public long executeInsert() throws Exception {
-    statement.executeUpdate();
+    try {
+      statement.executeUpdate();
 
-    try (ResultSet rs = statement.getGeneratedKeys()) {
-      if (rs.next()) {
-        return rs.getLong(1);
+      try (ResultSet rs = statement.getGeneratedKeys()) {
+        if (rs.next()) {
+          return rs.getLong(1);
+        }
       }
-    }
 
-    return -1;
+      return -1;
+    } catch (Exception e) {
+      tx.setFailed(e);
+      throw e;
+    }
   }
 
-  private <T> void bind(int parameter, T value) throws SQLException {
+  private <T> void bind(int parameter, T value) throws Exception {
     if (value instanceof SQLNull) {
       statement.setNull(parameter, ((SQLNull) value).getSqlType());
     } else if (value instanceof String) {
@@ -80,6 +104,9 @@ public class SQLStatement implements Statement {
       statement.setTime(parameter, (Time) value);
     } else if (value instanceof InputStream) {
       statement.setBinaryStream(parameter, (InputStream) value);
+    } else if (value.getClass().isEnum()) {
+      int ordinal = (Integer)value.getClass().getMethod("ordinal").invoke(value);
+      statement.setInt(parameter, ordinal);
     } else {
       statement.setObject(parameter, value);
     }
@@ -87,29 +114,22 @@ public class SQLStatement implements Statement {
 
   @Override
   public <T> Statement bind(String parameter, T value) throws Exception {
-    int[] indexes = parameters.get(parameter);
+    try {
+      int[] indexes = parameters.get(parameter);
 
-    if (indexes == null) {
-      throw new IllegalArgumentException("Unknown parameter: " + parameter);
+      if (indexes == null) {
+        throw new IllegalArgumentException("Unknown parameter: " + parameter);
+      }
+
+      for (int i : indexes) {
+        bind(i, value);
+      }
+
+      return this;
+    } catch (Exception e) {
+      tx.setFailed(e);
+      throw e;
     }
-
-    for (int i : indexes) {
-      bind(i, value);
-    }
-
-    return this;
-  }
-
-  @Override
-  public <T> Statement bindArray(String parameter, Iterable<T> values) throws Exception {
-    int i = 0;
-
-    for (T value : values) {
-      bind(String.format("%s_%d", parameter, i), value);
-      i++;
-    }
-
-    return this;
   }
 
   private static final String parse(String query, Map<String, int[]> paramMap) {

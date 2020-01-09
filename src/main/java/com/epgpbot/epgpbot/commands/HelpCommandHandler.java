@@ -36,10 +36,17 @@ public class HelpCommandHandler extends CommandHandlerAbstract {
       if (!request.arguments().isEmpty()) {
         boolean isMatch = false;
 
-        for (String arg : request.arguments()) {
-          if (h.command().startsWith(arg)) {
+        if (request.hasFlag("details")) {
+          if (h.command().equals(request.arguments().get(0))) {
             isMatch = true;
-            break;
+          }
+        }
+        else {
+          for (String arg : request.arguments()) {
+            if (h.command().startsWith(arg)) {
+              isMatch = true;
+              break;
+            }
           }
         }
 
@@ -57,6 +64,13 @@ public class HelpCommandHandler extends CommandHandlerAbstract {
         message.append(Joiner.on(",").join(h.permissions()));
       }
       message.append("\n");
+
+      if (request.hasFlag("details")) {
+        if (h.advancedHelp() != null) {
+          message.append(h.advancedHelp());
+          message.append("\n");
+        }
+      }
     }
 
     if (message.toString().isEmpty()) {
@@ -68,7 +82,7 @@ public class HelpCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "[<command:string>] [--show-permissions] - Displays information about available commands.";
+    return "[<command:string>] [--details] [--show-permissions] - Displays information about available commands.";
   }
 
   @Override

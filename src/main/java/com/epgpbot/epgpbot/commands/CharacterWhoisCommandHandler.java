@@ -100,6 +100,21 @@ public class CharacterWhoisCommandHandler extends CommandHandlerAbstract {
   }
 
   @Override
+  public String advancedHelp() {
+    return
+          "```\n"
+        + "Displays details (such as player, level, class, etc.) about the given character(s).\n"
+        + "Useful for determining which player a character belongs to when lots of alts are involved.\n"
+        + "\n"
+        + "[--no-sync]:\n"
+        + "  When specified, the bot will not attempt to fetch updated character information from the armory.\n"
+        + "\n"
+        + "Example:\n"
+        + "!character.whois Ectrian\n"
+        + "```\n";
+  }
+
+  @Override
   public String help() {
     return "<...character:string> [--no-sync] - Returns information about a character and any associated player.";
   }

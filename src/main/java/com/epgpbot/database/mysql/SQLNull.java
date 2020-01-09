@@ -54,4 +54,31 @@ public enum SQLNull {
   public int getSqlType() {
     return sqlType;
   }
+
+  public static <T> SQLNull forType(Class<T> type) {
+    if (type.equals(String.class)) {
+      return SQLNull.VARCHAR;
+    }
+    else if (type.equals(Long.class)) {
+      return SQLNull.INTEGER;
+    }
+    else if (type.equals(Integer.class)) {
+      return SQLNull.INTEGER;
+    }
+    else if (type.equals(Double.class)) {
+      return SQLNull.DOUBLE;
+    }
+    else if (type.equals(Float.class)) {
+      return SQLNull.FLOAT;
+    }
+    else if (type.equals(Boolean.class)) {
+      return SQLNull.BOOLEAN;
+    }
+    else if (type.equals(Short.class)) {
+      return SQLNull.INTEGER;
+    }
+    else {
+      throw new IllegalArgumentException(type.getCanonicalName());
+    }
+  }
 }

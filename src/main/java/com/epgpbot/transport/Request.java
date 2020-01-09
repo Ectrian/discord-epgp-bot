@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.epgpbot.util.Argument;
 import com.epgpbot.util.CommandParser;
 import com.google.common.collect.ImmutableList;
 
@@ -87,5 +88,54 @@ public class Request {
 
   public Map<String, List<String>> flags() {
     return this.flags;
+  }
+
+  public static Argument arg(String name, String value) {
+    return new Argument(name, value);
+  }
+
+  public static Argument arg(String value) {
+    return arg(null, value);
+  }
+
+  public static List<Argument> args(String name, List<String> values) {
+    List<Argument> args = new ArrayList<>();
+    for (String value : values) {
+      args.add(arg(name, value));
+    }
+    return args;
+  }
+
+  public static List<Argument> args(List<String> values) {
+    return args(null, values);
+  }
+
+  public Argument arg(String name, int i) {
+    if (i >= arguments().size()) {
+      return arg(name, null);
+    }
+    return arg(name, arguments().get(i));
+  }
+
+  public List<Argument> argsFrom(String name, int i) {
+    return args(name, argumentsFrom(i));
+  }
+
+  public List<Argument> args(String name) {
+    return argsFrom(name, 0);
+  }
+
+  public Argument flagArg(String name) {
+    if (!hasFlag(name) || flag(name).size() != 1) {
+      return arg(name, null);
+    }
+    return arg(name, flag(name).get(0));
+  }
+
+  public List<Argument> flagArgs(String name) {
+    if (!hasFlag(name) || flag(name).isEmpty()) {
+      return ImmutableList.of();
+    }
+    return args(name, flag(name));
   }
 }

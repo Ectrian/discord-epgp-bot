@@ -1,6 +1,7 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.EPGPEventType;
@@ -39,7 +40,7 @@ public class EPGPAwardRaidCommandHandler extends AbstractEPGPCommandHandler {
     }
 
     try (Transaction tx = context.database().transaction()) {
-      performEPGPUpdate(context, tx, EPGPEventType.RAID, ep, 0, null, raidName, note, characterNames, toCheckForDuplicates, false);
+      performEPGPUpdate(context, tx, EPGPEventType.RAID, ep, 0, null, raidName, note, characterNames, toCheckForDuplicates, false, Optional.empty());
     }
   }
 

@@ -1,6 +1,7 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.EPGPEventType;
@@ -10,43 +11,35 @@ import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
 public class EPGPAwardLootCommandHandler extends AbstractEPGPCommandHandler {
-  // TODO: Use an items table database to validate loot against?
-  // TODO: Add loot aliases (e.g. "DBW" -> "Deathbringer's Will")?
-  // TODO: Merge existing loot entries w/ typos (add command for it).
-  // TODO: Add loot stats command.
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    if (request.arguments().size() < 3 || request.arguments().size() > 4) {
+    if (request.arguments().size() != 3) {
       sendCorrectUsage(context);
       return;
     }
 
-    long gp;
-    try {
-      gp = Long.parseLong(request.arguments().get(0));
-    } catch (NumberFormatException e) {
-      sendCorrectUsage(context);
-      return;
-    }
-
-    final String lootName = request.arguments().get(1);
-    final String characterName = request.arguments().get(2);
-
-    String note = null;
-    if (request.arguments().size() >= 4) {
-      note = request.arguments().get(3);
-    }
+    long gp = request.arg("gp", 0).longValue();
+    String lootName = request.arg("item", 1).stringValue();
+    String characterName = request.arg("character", 2).stringValue();
+    String note = request.flagArg("note").stringOption().isPresent() ?
+                  request.flagArg("note").stringValue() :
+                  null;
+    Optional<Long> time = request.flagArg("time").timeOption();
 
     boolean createLoot = request.hasFlag("add-item");
 
     try (Transaction tx = context.database().transaction()) {
-      performEPGPUpdate(context, tx, EPGPEventType.LOOT, 0, gp, lootName, null, note, ImmutableList.of(characterName), ImmutableList.of(), createLoot);
+      performEPGPUpdate(
+          context, tx, EPGPEventType.LOOT, 0,
+          gp, lootName, null, note,
+          ImmutableList.of(characterName),
+          ImmutableList.of(), createLoot, time);
     }
   }
 
   @Override
   public String help() {
-    return "<gp:int> <item:string> <character:string> [<note:string>] [--add-item] - Awards GP for looting an item.";
+    return "<gp:int> <item:string> <character:string> [--note <note:string>] [--time <time:datetime>] [--add-item] - Awards GP for looting an item.";
   }
 
   @Override

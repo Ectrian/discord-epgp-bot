@@ -30,6 +30,7 @@ public class EPGPUndoCommandHandler extends AbstractEPGPCommandHandler {
     try (Statement q = tx.prepare(
           "INSERT INTO epgp_log ("
         + "    timestamp, "
+        + "    action_timestamp, "
         + "    target_player_id, "
         + "    target_character_id, "
         + "    source_player_id, "
@@ -40,6 +41,7 @@ public class EPGPUndoCommandHandler extends AbstractEPGPCommandHandler {
         + "    gp_delta,"
         + "    undoes"
         + ") VALUES ("
+        + "    :timestamp, "
         + "    :timestamp, "
         + "    :target_player_id, "
         + "    :target_character_id, "
@@ -129,6 +131,7 @@ public class EPGPUndoCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
+    // XXX: Should show the undone log entry on success.
     List<Long> ids = new ArrayList<>();
 
     for (int i = 0; i < request.arguments().size(); i++) {

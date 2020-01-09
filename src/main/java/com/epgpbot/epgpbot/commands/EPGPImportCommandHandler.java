@@ -1,6 +1,7 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.EPGPEventType;
@@ -42,7 +43,7 @@ public class EPGPImportCommandHandler extends AbstractEPGPCommandHandler {
     gp -= context.epgp().baseGP();
 
     try (Transaction tx = context.database().transaction()) {
-      performEPGPUpdate(context, tx, EPGPEventType.IMPORT, ep, gp, null, null, null, ImmutableList.of(characterName), ImmutableList.of(), false);
+      performEPGPUpdate(context, tx, EPGPEventType.IMPORT, ep, gp, null, null, null, ImmutableList.of(characterName), ImmutableList.of(), false, Optional.empty());
     }
   }
 

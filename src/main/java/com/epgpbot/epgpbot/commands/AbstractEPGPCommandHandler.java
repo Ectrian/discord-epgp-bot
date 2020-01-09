@@ -18,6 +18,7 @@ import com.epgpbot.epgpbot.schema.LootInfo;
 import com.epgpbot.epgpbot.schema.RaidType;
 import com.epgpbot.epgpbot.schema.game.ItemRarity;
 import com.epgpbot.transport.CommandContext;
+import com.epgpbot.util.PlayerId;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 
@@ -50,7 +51,7 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
   protected void performEPGPUpdate(CommandContext context, Transaction tx, EPGPEventType event,
                                    long epDelta, long gpDelta, String lootName, String raidName,
                                    String note, List<String> characters, List<String> charactersToCheckForDuplicates,
-                                   boolean createLoot) throws Exception {
+                                   boolean createLoot, Optional<Long> timestamp) throws Exception {
     // TODO: use charactersToCheckForDuplicates.
     Long lootId = -1L;
     if (lootName != null) {
@@ -159,7 +160,8 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
                   lootId,
                   epDelta,
                   gpDelta,
-                  note);
+                  note,
+                  timestamp);
     }
 
     if (playerIds.size() == 1 && lootId != -1) {
@@ -218,13 +220,16 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
                              long lootId,
                              long epDelta,
                              long gpDelta,
-                             String note) throws Exception {
+                             String note,
+                             Optional<Long> timestamp) throws Exception {
     try (Statement q = tx.prepare("INSERT INTO epgp_log ("
-        + "timestamp, target_player_id, target_character_id, source_player_id, type, raid_type, loot_id, ep_delta, gp_delta, note"
+        + "timestamp, target_player_id, target_character_id, source_player_id, type, raid_type, loot_id, ep_delta, gp_delta, note, action_timestamp"
         + ") VALUES ("
-        + ":timestamp, :target_player_id, :target_character_id, :source_player_id, :type, :raid_type, :loot_id, :ep_delta, :gp_delta, :note"
+        + ":timestamp, :target_player_id, :target_character_id, :source_player_id, :type, :raid_type, :loot_id, :ep_delta, :gp_delta, :note, :action_timestamp"
         + ");")) {
-      q.bind("timestamp", Instant.now().getEpochSecond());
+      long actionTimestamp = Instant.now().getEpochSecond();
+      q.bind("action_timestamp", actionTimestamp);
+      q.bind("timestamp", timestamp.orElse(actionTimestamp));
       q.bind("target_player_id", targetPlayerId);
 
       if (targetCharacterId < 0) {
@@ -275,6 +280,7 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
                 -1,
                 epDelta,
                 gpDelta,
-                null);
+                null,
+                Optional.empty());
   }
 }

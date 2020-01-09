@@ -10,7 +10,7 @@ StaticPopupDialogs["RAID_MEMBER_LIST"] = {
     OnShow = function (self, data)
         message = ""
 
-        for i = 1, GetNumRaidMembers() do
+        for i = 1, GetNumGroupMembers() do
             name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
             if string.len(message) > 0 then
                 message = message .. " " .. name;

@@ -1,6 +1,7 @@
 package com.epgpbot.epgpbot.commands;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.EPGPEventType;
@@ -29,7 +30,7 @@ public class EPGPAwardIncentiveCommandHandler extends AbstractEPGPCommandHandler
     final List<String> characterNames = request.argumentsFrom(2);
 
     try (Transaction tx = context.database().transaction()) {
-      performEPGPUpdate(context, tx, EPGPEventType.INCENTIVE, ep, 0, null, null, note, characterNames, ImmutableList.of(), false);
+      performEPGPUpdate(context, tx, EPGPEventType.INCENTIVE, ep, 0, null, null, note, characterNames, ImmutableList.of(), false, Optional.empty());
     }
   }
 

@@ -138,6 +138,11 @@ public class DiscordUser implements com.epgpbot.transport.User {
       }
     }
 
+    Set<PermissionType> uidPermissions = config.discord_users_to_permissions.get(user.getId());
+    if (uidPermissions != null) {
+      permissions.addAll(uidPermissions);
+    }
+
     return permissions;
   }
 }

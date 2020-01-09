@@ -1,11 +1,11 @@
 package com.epgpbot.database.mysql;
 
-import com.epgpbot.database.Database;
+import com.epgpbot.database.AbstractDatabase;
 import com.epgpbot.database.IsolationLevel;
 import com.epgpbot.database.Transaction;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class SQLDatabase implements Database {
+public class SQLDatabase extends AbstractDatabase {
   private final ComboPooledDataSource source;
 
   public SQLDatabase(
@@ -53,12 +53,7 @@ public class SQLDatabase implements Database {
   }
 
   @Override
-  public Transaction transaction() throws Exception {
-    return transaction(IsolationLevel.DEFAULT);
-  }
-
-  @Override
   public Transaction transaction(IsolationLevel level) throws Exception {
-    return new SQLTransaction(source.getConnection());
+    return new SQLTransaction(level, source.getConnection());
   }
 }

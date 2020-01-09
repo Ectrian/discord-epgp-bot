@@ -48,6 +48,10 @@ public class Config {
   // - Members have VIEW_EPGP
   public Map<String, Set<PermissionType>> discord_ranks_to_permissions = ImmutableMap.of();
 
+  // Mapping of Discord User IDs to permissions available.
+  // To obtain an ID, enable developer mode in discord settings. You can now copy user IDs.
+  public Map<String, Set<PermissionType>> discord_users_to_permissions = ImmutableMap.of();
+
   // List of officer player names (used for !guild.officers). Case-sensitive.
   // For Classic WoW, leave empty.
   public Set<String> officer_player_names = ImmutableSet.of();

@@ -11,6 +11,7 @@ import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
+import com.epgpbot.util.PlayerId;
 import com.epgpbot.util.TextTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -58,6 +59,18 @@ public class CharacterAltsCommandHandler extends CommandHandlerAbstract {
       table,
       ImmutableSet.of()
     ) + "```\n");
+  }
+
+  @Override
+  public String advancedHelp() {
+    return
+          "```\n"
+        + "Displays details (such as player, level, class, etc.) about all alts of a given character.\n"
+        + "Useful for determining all characters that belong to a particular player.\n"
+        + "\n"
+        + "Example:\n"
+        + "!character.alts Ectrian\n"
+        + "```\n";
   }
 
   @Override

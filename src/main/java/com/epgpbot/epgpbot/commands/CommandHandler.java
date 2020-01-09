@@ -10,6 +10,7 @@ public interface CommandHandler {
   public void handle(CommandContext context, Request request) throws Exception;
   public String help();
   public String command();
+  public String advancedHelp();
   public List<PermissionType> permissions();
   public boolean visible();
 }

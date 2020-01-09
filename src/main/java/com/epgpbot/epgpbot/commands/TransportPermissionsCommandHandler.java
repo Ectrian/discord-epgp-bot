@@ -19,7 +19,7 @@ public class TransportPermissionsCommandHandler extends CommandHandlerAbstract {
       user = request.mentions().get(0);
     }
 
-    context.replyf("Permissions for **%s**: %s", user.transportUserName(),
+    context.replyf("Permissions for **%s**: [%s]", user.transportUserName(),
         Joiner.on(", ").join(user.permissions()));
   }
 
@@ -35,6 +35,6 @@ public class TransportPermissionsCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public List<PermissionType> permissions() {
-    return ImmutableList.of();
+    return ImmutableList.of(PermissionType.VIEW_EPGP);
   }
 }

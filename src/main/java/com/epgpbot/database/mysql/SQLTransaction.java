@@ -2,19 +2,22 @@ package com.epgpbot.database.mysql;
 
 import java.sql.Connection;
 
+import com.epgpbot.database.AbstractTransaction;
 import com.epgpbot.database.IsolationLevel;
 import com.epgpbot.database.Statement;
-import com.epgpbot.database.Transaction;
+import com.google.common.collect.ImmutableList;
 
-public class SQLTransaction implements Transaction {
+public class SQLTransaction extends AbstractTransaction {
   private final Connection connection;
   private final int oldIsolationLevel;
   private final boolean oldAutoCommit;
+  private boolean isFailed;
 
   public SQLTransaction(IsolationLevel level, Connection connection) throws Exception {
     this.connection = connection;
     this.oldIsolationLevel = connection.getTransactionIsolation();
     this.oldAutoCommit = connection.getAutoCommit();
+    this.isFailed = false;
 
     connection.setAutoCommit(false);
 
@@ -43,15 +46,13 @@ public class SQLTransaction implements Transaction {
   @Override
   public void close() throws Exception {
     try {
-      connection.commit();
+      if (isFailed) {
+        connection.rollback();
+      } else {
+        connection.commit();
+      }
       connection.setTransactionIsolation(oldIsolationLevel);
       connection.setAutoCommit(oldAutoCommit);
-    }
-    catch (Exception e) {
-      connection.rollback();
-      connection.setTransactionIsolation(oldIsolationLevel);
-      connection.setAutoCommit(oldAutoCommit);
-      throw e;
     }
     finally {
       connection.close();
@@ -60,6 +61,23 @@ public class SQLTransaction implements Transaction {
 
   @Override
   public Statement prepare(String statement) throws Exception {
-    return new SQLStatement(connection, statement);
+    try {
+      return new SQLStatement(this, statement);
+    } catch (Exception e) {
+      setFailed(e);
+      throw e;
+    }
+  }
+
+  void setFailed(Exception e) {
+    setFailed();
+  }
+
+  void setFailed() {
+    isFailed = true;
+  }
+
+  Connection connection() {
+    return connection;
   }
 }
