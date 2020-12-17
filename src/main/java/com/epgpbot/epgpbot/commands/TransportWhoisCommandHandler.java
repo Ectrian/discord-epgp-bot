@@ -10,6 +10,7 @@ import com.epgpbot.epgpbot.schema.PermissionType;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.epgpbot.transport.User;
+import com.epgpbot.util.Argument;
 import com.google.common.collect.ImmutableList;
 
 public class TransportWhoisCommandHandler extends CommandHandlerAbstract {
@@ -18,12 +19,8 @@ public class TransportWhoisCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    if (request.mentions().isEmpty()) {
-      sendCorrectUsage(context);
-      return;
-    }
-
-    for (User u : request.mentions()) {
+    for (Argument a : request.args("user")) {
+      User u = a.userValue(context);
       try (Transaction tx = context.database().transaction()) {
         try (Statement q = tx.prepare(
               "SELECT p.name "

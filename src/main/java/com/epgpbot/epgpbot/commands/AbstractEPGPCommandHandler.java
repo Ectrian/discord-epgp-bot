@@ -23,7 +23,7 @@ import com.epgpbot.util.PlayerId;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 
-import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract {
   protected long getSourcePlayerId(CommandContext context) throws Exception {

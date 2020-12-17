@@ -2,8 +2,8 @@ package com.epgpbot.transport.discord;
 
 import java.io.IOException;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
 
 public class DiscordPrivateMessageChannel extends DiscordChannel {
   private final PrivateChannel channel;

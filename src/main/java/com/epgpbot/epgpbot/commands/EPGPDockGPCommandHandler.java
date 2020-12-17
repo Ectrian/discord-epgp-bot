@@ -10,10 +10,10 @@ import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
-public class EPGPDockCommandHandler extends AbstractEPGPCommandHandler {
+public class EPGPDockGPCommandHandler extends AbstractEPGPCommandHandler {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    final long ep = request.arg("ep", 0).longValueAtLeast(0);
+    final long gp = request.arg("ep", 0).longValueAtLeast(0);
     final String note = request.arg("reason", 1).stringValue();
     final List<String> characterNames = request.argumentsFrom(2);
 
@@ -22,8 +22,8 @@ public class EPGPDockCommandHandler extends AbstractEPGPCommandHandler {
           context,
           tx,
           EPGPEventType.PENALTY,
-          -1 * ep,
           0,
+          -1 * gp,
           null,
           null,
           note,
@@ -36,12 +36,12 @@ public class EPGPDockCommandHandler extends AbstractEPGPCommandHandler {
 
   @Override
   public String help() {
-    return "<ep:int> <reason:string> <...character:string> - Removes EP for poor performance.";
+    return "<gp:int> <reason:string> <...character:string> - Removes GP for poor performance.";
   }
 
   @Override
   public String command() {
-    return "epgp.dock";
+    return "epgp.dockgp";
   }
 
   @Override

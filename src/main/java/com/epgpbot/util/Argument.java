@@ -74,6 +74,25 @@ public class Argument {
     return option.get();
   }
 
+  public long longValueAtLeast(long n) {
+    long value = longValue();
+    require(value >= n, String.format("expected integer >= %d", n));
+    return value;
+  }
+
+  public long longValueAtMost(long n) {
+    long value = longValue();
+    require(value <= n, String.format("expected integer >= %d", n));
+    return value;
+  }
+
+  public long longValueBetween(long min, long max) {
+    long value = longValue();
+    require(value >= min && value <= max, String.format("expected integer between %d and %d", min, max));
+    return value;
+  }
+
+
   public Optional<Integer> intOption() {
     if (isEmpty()) {
       return Optional.empty();
@@ -230,7 +249,7 @@ public class Argument {
   }
 
   private User getTransportUser(CommandContext context, String name, int discriminator) throws Exception {
-    for (net.dv8tion.jda.core.entities.User user : context.transport().raw().getUsersByName(name, true)) {
+    for (net.dv8tion.jda.api.entities.User user : context.transport().raw().getUsersByName(name, true)) {
       if (user.getDiscriminator().equals(String.format("%d", discriminator))) {
         return new DiscordUser(context.database(), context.config(), user, null);
       }
@@ -240,6 +259,13 @@ public class Argument {
   }
 
   private User getTransportUser(CommandContext context, String name) throws Exception {
+    if (name.matches("^<@![0-9]+>$")) {
+      String id = name.substring(3, name.length() - 1);
+      net.dv8tion.jda.api.entities.User user = context.transport().raw().getUserById(id);
+      require(user != null, "invalid user reference (not found)");
+      return new DiscordUser(context.database(), context.config(), user, null);
+    }
+
     if (name.startsWith("@")) {
       name = name.substring(1, name.length());
     }

@@ -1,5 +1,6 @@
 package com.epgpbot.epgpbot.commands;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.epgpbot.database.Transaction;
@@ -11,22 +12,22 @@ import com.epgpbot.transport.Request;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
-import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class ItemLinkCommandHandler extends CommandHandlerAbstract {
-  private void sendItemLink(
-      CommandContext context,
-      LootInfo loot,
-      String footer) throws Exception {
-    context.source().raw()
-      .sendFile(loot.getTooltipImage(), "item.png")
-      .embed(new EmbedBuilder()
-          .setTitle(loot.name, loot.getDatabaseURL())
-          .setImage("attachment://item.png")
-          .setFooter(footer, null)
-          .setColor(ItemRarity.values()[loot.itemRarity].color)
-          .build())
-      .queue();
+  private void sendItemLink(CommandContext context, LootInfo loot, String footer) throws Exception {
+    InputStream tooltip = loot.getTooltipImage();
+
+    if (tooltip == null) {
+      context.errorf("Tooltip is unavailable for that item.");
+      return;
+    }
+
+    context.source().raw().sendFile(tooltip, "item.png")
+        .embed(new EmbedBuilder().setTitle(loot.name, loot.getDatabaseURL())
+            .setImage("attachment://item.png").setFooter(footer, null)
+            .setColor(ItemRarity.values()[loot.itemRarity].color).build())
+        .queue();
   }
 
   @Override
@@ -50,8 +51,9 @@ public class ItemLinkCommandHandler extends CommandHandlerAbstract {
     for (LootInfo match : matches) {
       String footer = null;
       if (matches.size() > 1 && !match.name.toLowerCase().equals(query.toLowerCase())) {
-        footer = String.format("Note: %d additional matches for '%s' - try using a more exact name.",
-            matches.size() - 1, query);
+        footer =
+            String.format("Note: %d additional matches for '%s' - try using a more exact name.",
+                matches.size() - 1, query);
       }
       sendItemLink(context, match, footer);
       return;

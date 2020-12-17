@@ -2,6 +2,7 @@ package com.epgpbot.epgpbot.commands;
 
 import java.util.List;
 
+import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
@@ -15,30 +16,40 @@ public class PlayerTransportLinkCommandHandler extends CommandHandlerAbstract {
   // TODO: Audit logging.
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    if (request.arguments().isEmpty() || request.mentions().isEmpty()) {
-      sendCorrectUsage(context);
-      return;
-    }
-
-    final String playerName = request.arguments().get(0);
+    boolean force = request.hasFlag("force");
 
     try (Transaction tx = context.database().transaction()) {
-      final PlayerId player = getPlayerId(tx, playerName);
-      if (player == null) {
-        sendError(context, "Unknown player '%s'.", playerName);
-        return;
+      final PlayerId player = request.arg("player", 0).playerIdValue(tx);
+      final User user = request.arg("user", 1).userValue(context);
+
+      if (!force) {
+        try (Statement q = tx.prepare(
+            "SELECT * FROM transport_users WHERE id = :id;")) {
+          q.bind("id", user.transportUserId());
+          try(Cursor c = q.executeFetch()) {
+            while (c.next()) {
+              context.abort("Provided user is already linked to a player.");
+            }
+          }
+        }
+
+        try (Statement q = tx.prepare(
+            "SELECT * FROM transport_users WHERE player_id = :player_id;")) {
+          q.bind("player_id", player.id);
+          try(Cursor c = q.executeFetch()) {
+            while (c.next()) {
+              context.abort("Provided player is already linked to another user.");
+            }
+          }
+        }
       }
 
-      for (User user : request.mentions()) {
-        // TODO: Error if transport user is already linked to another player.
-        // TODO: Warn if player is already linked to another transport user.
-        try (Statement q = tx.prepare(
-            "REPLACE INTO transport_users (id, player_id, name) VALUES (:id, :player_id, :name);")) {
-          q.bind("id", user.transportUserId());
-          q.bind("player_id", player.id);
-          q.bind("name", user.transportUserName());
-          q.executeInsert();
-        }
+      try (Statement q = tx.prepare(
+          "REPLACE INTO transport_users (id, player_id, name) VALUES (:id, :player_id, :name);")) {
+        q.bind("id", user.transportUserId());
+        q.bind("player_id", player.id);
+        q.bind("name", user.transportUserName());
+        q.executeInsert();
       }
     }
 

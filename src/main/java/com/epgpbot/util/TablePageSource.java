@@ -10,7 +10,7 @@ import com.epgpbot.util.MessagePaginator.PageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class TablePageSource implements PageSource {
   private static final int PER_PAGE = 15;

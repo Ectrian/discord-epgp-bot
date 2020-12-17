@@ -93,7 +93,7 @@ public class ItemDistributionCommandHandler extends CommandHandlerAbstract {
 
   @Override
   public String help() {
-    return "<item:string> <raid:string> [<...character:string>] - Tool to help distribute a piece of loot evenly amongst players.";
+    return "<item:string> <raid:string> [<...character:string>] [--min-clears <n:int>] [--raid-size <n:int>] - Tool to help distribute a piece of loot evenly amongst players.";
   }
 
   @Override

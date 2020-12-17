@@ -12,8 +12,8 @@ import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.google.common.collect.ImmutableList;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class ItemStatsCommandHandler extends AbstractEPGPCommandHandler {
   @Override

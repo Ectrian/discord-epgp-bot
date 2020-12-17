@@ -10,10 +10,10 @@ import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 
 public class DiscordUser implements com.epgpbot.transport.User {
   private long playerId;

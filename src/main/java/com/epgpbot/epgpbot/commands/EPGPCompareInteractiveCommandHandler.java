@@ -30,11 +30,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 
 class InteractiveCompareListener implements ReactionListener {
   private static final ImmutableMap<String, Integer> SPEC_SORT =
@@ -96,7 +96,7 @@ class InteractiveCompareListener implements ReactionListener {
   }
 
   private void updateMessage(MessageChannel channel) {
-    channel.getMessageById(messageId).queue((Message m) -> {
+    channel.retrieveMessageById(messageId).queue((Message m) -> {
         try {
           // XXX: Perhaps we should rate-limit the updates?
           m.editMessage(render()).queue();

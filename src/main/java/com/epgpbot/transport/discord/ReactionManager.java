@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 
 public class ReactionManager implements AutoCloseable {
   private final ConcurrentHashMap<String, ConcurrentLinkedQueue<ReactionListener>> map;

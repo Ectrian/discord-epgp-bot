@@ -11,23 +11,24 @@ import com.epgpbot.transport.EventHandler;
 import com.epgpbot.transport.Transport;
 import com.epgpbot.transport.discord.ReactionManager.ReactionListener;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.DisconnectEvent;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ReconnectedEvent;
-import net.dv8tion.jda.core.events.StatusChangeEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ReconnectedEvent;
+import net.dv8tion.jda.api.events.StatusChangeEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class DiscordTransport extends ListenerAdapter implements Transport {
   @Override
@@ -65,9 +66,15 @@ public class DiscordTransport extends ListenerAdapter implements Transport {
   public void run(EventHandler handler) throws Exception {
     System.out.format("[Transport] Connecting...\n");
     this.handler = handler;
-    JDABuilder builder = new JDABuilder(token);
+    JDABuilder builder = JDABuilder.createDefault(
+        token,
+        GatewayIntent.GUILD_MEMBERS,
+        GatewayIntent.GUILD_MESSAGES,
+        GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        GatewayIntent.DIRECT_MESSAGES,
+        GatewayIntent.DIRECT_MESSAGE_REACTIONS);
     builder.setAutoReconnect(true);
-    builder.addEventListener(this);
+    builder.addEventListeners(this);
     this.jda = builder.build();
     jda.awaitReady();
     quitQ.take();
@@ -89,7 +96,7 @@ public class DiscordTransport extends ListenerAdapter implements Transport {
       }
 
       Database db = handler.getDatabase();
-      String text = message.getContentDisplay();
+      String text = message.getContentRaw();
 
       List<User> mentions = message.getMentionedUsers();
       List<com.epgpbot.transport.User> mentionedUsers = new ArrayList<>();

@@ -12,8 +12,8 @@ import com.epgpbot.util.TablePageSource;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 public class TransportListNoRolesCommandHandler extends CommandHandlerAbstract {
   @Override

@@ -29,6 +29,7 @@ import com.epgpbot.epgpbot.commands.EPGPCompareCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPRewriteHistoryCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPDecayCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPDockCommandHandler;
+import com.epgpbot.epgpbot.commands.EPGPDockGPCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPImportCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCheckDBIntegrityCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPCompareInteractiveCommandHandler;
@@ -68,7 +69,7 @@ import com.epgpbot.epgpbot.commands.TransportWhoisCommandHandler;
 import com.epgpbot.util.Argument;
 import com.epgpbot.util.CommandParser;
 
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class EventHandler implements AutoCloseable {
   private final List<CommandHandler> handlers;
@@ -153,6 +154,7 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPCommandHandler());
         handlers.add(new EPGPDecayCommandHandler());
         handlers.add(new EPGPDockCommandHandler());
+        handlers.add(new EPGPDockGPCommandHandler());
         handlers.add(new EPGPAwardLootCommandHandler());
         handlers.add(new EPGPAwardRaidCommandHandler());
         handlers.add(new EPGPAwardIncentiveCommandHandler());

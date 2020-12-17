@@ -94,7 +94,7 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>3.8.2_459</version>
+      <version>4.2.0_160</version>
       <scope>system</scope>
       <systemPath>${basedir}/vendor/JDA.jar</systemPath>
     </dependency>

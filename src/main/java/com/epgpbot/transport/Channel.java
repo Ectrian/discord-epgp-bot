@@ -2,7 +2,7 @@ package com.epgpbot.transport;
 
 import java.io.IOException;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public interface Channel {
   public boolean isPrivate();

@@ -2,7 +2,7 @@ package com.epgpbot.transport;
 
 import com.epgpbot.transport.discord.ReactionManager.ReactionListener;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
 
 public interface Transport extends AutoCloseable {
   public void registerReactionListener(String messageId, ReactionListener listener);

@@ -16,12 +16,11 @@ import com.epgpbot.transport.discord.ReactionManager;
 import com.epgpbot.transport.discord.ReactionManager.ReactionListener;
 import com.google.common.collect.ImmutableList;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 
 public class MessagePaginator implements ReactionListener {
   public interface PageSource {
@@ -107,7 +106,7 @@ public class MessagePaginator implements ReactionListener {
 
     MessageEmbed embed = source.renderPageEmbed(currentPage);
     if (embed != null) {
-      event.getChannel().getMessageById(event.getMessageId()).queue((Message m) -> {
+      event.getChannel().retrieveMessageById(event.getMessageId()).queue((Message m) -> {
         m.editMessage(embed).queue();
       });
     }
@@ -120,13 +119,13 @@ public class MessagePaginator implements ReactionListener {
       for (String messageId : messageIds) {
         if (messageChunks.hasNext()) {
           String chunk = messageChunks.next();
-          event.getChannel().getMessageById(messageId).queue((Message m) -> {
+          event.getChannel().retrieveMessageById(messageId).queue((Message m) -> {
             if (!m.getContentRaw().equals(chunk)) {
               m.editMessage(chunk).queue();
             }
           });
         } else {
-          event.getChannel().getMessageById(messageId).queue((Message m) -> {
+          event.getChannel().retrieveMessageById(messageId).queue((Message m) -> {
             if (!m.getContentRaw().equals(".")) {
               m.editMessage(".").queue();
             }
@@ -150,7 +149,7 @@ public class MessagePaginator implements ReactionListener {
     String message = source.renderPage(0);
     MessageEmbed embed = source.renderPageEmbed(0);
     if (message != null) {
-      List<RequestFuture<Message>> messages = new ArrayList<>();
+      List<CompletableFuture<Message>> messages = new ArrayList<>();
 
       int lastChunkSize = 0;
       for (String text : TextChunker.chunk(message, DiscordChannel.MESSAGE_MAX_LEN)) {
@@ -169,7 +168,7 @@ public class MessagePaginator implements ReactionListener {
               Message lastMessage = null;
               List<String> messageIds = new ArrayList<>();
 
-              for (RequestFuture<Message> f : messages) {
+              for (CompletableFuture<Message> f : messages) {
                 lastMessage = f.get();
                 messageIds.add(lastMessage.getId());
               }

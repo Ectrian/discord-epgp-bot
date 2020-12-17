@@ -2,8 +2,8 @@ package com.epgpbot.transport.discord;
 
 import java.io.IOException;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class DiscordGuildChannel extends DiscordChannel {
   private final TextChannel channel;

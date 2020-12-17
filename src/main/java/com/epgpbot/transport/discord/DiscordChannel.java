@@ -4,7 +4,7 @@ import com.epgpbot.transport.Channel;
 import com.epgpbot.util.TextChunker;
 import com.google.common.collect.ImmutableList;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public abstract class DiscordChannel implements Channel {
   // Hard message limit enforced by Discord.
