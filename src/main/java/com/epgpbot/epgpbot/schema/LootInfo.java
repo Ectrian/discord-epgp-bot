@@ -1,6 +1,9 @@
 package com.epgpbot.epgpbot.schema;
 
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -10,6 +13,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import org.apache.commons.io.IOUtils;
 
 import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
@@ -60,9 +67,32 @@ public class LootInfo {
     if (itemId < 0) {
       return null;
     }
-    String url = String.format("https://items.classicmaps.xyz/%d.png", itemId);  // TODO: Localize.
-    InputStream file = new URL(url).openStream();
-    return file;
+
+    try {
+      URL zfu = this.getClass().getResource("/classic-tooltips.zip");
+      try (ZipFile zf = new ZipFile(new File(zfu.toURI()))) {
+        ZipEntry entry = zf.getEntry(String.format("%d.png", itemId));
+
+        if (entry == null) {
+          return null;
+        }
+
+        InputStream file = zf.getInputStream(entry);
+        byte[] image = IOUtils.toByteArray(file);
+        return new ByteArrayInputStream(image);
+      }
+
+      /*
+      String url = String.format("https://items.classicmaps.xyz/%d.png", itemId);  // TODO: Localize.
+      URLConnection con = new URL(url).openConnection();
+      con.setConnectTimeout(1000);  // in milliseconds
+      InputStream file = con.getInputStream();
+      byte[] image = IOUtils.toByteArray(file);
+      return new ByteArrayInputStream(image);
+      */
+    } catch (IOException e) {
+      throw new Exception("Failed to fetch item tooltip image", e);
+    }
   }
 
   @Override

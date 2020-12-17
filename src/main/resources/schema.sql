@@ -72,6 +72,7 @@ CREATE TABLE loot_game_info (
   loot_id int(64) unsigned NOT NULL,
   game_id int(64) unsigned NOT NULL,
   game_rarity int(8) unsigned NOT NULL,
+  game_slot int(8) unsigned NOT NULL,
   FOREIGN KEY(loot_id) REFERENCES loot(id) ON DELETE RESTRICT,
   UNIQUE(game_id)
 );
@@ -120,4 +121,5 @@ ALTER TABLE epgp_log ADD CONSTRAINT fk_undoes FOREIGN KEY (undoes) REFERENCES ep
 ALTER TABLE epgp_log ADD CONSTRAINT fk_undone_by FOREIGN KEY (undone_by) REFERENCES epgp_log(id) ON DELETE SET NULL;
 ALTER TABLE epgp_log ADD action_timestamp int(64) unsigned not null;
 UPDATE epgp_log SET action_timestamp = timestamp;
+ALTER TABLE loot_game_info ADD game_slot int(8) unsigned NOT NULL;
 */

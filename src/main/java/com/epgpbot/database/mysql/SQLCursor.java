@@ -2,7 +2,7 @@ package com.epgpbot.database.mysql;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -158,7 +158,7 @@ public class SQLCursor extends AbstractCursor {
     try {
       List<Map<String, Object>> out = new ArrayList<>();
       while (rs.next()) {
-        Map<String, Object> row = new HashMap<>();
+        Map<String, Object> row = new LinkedHashMap<>();
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
           row.put(rs.getMetaData().getColumnLabel(i), rs.getObject(i));
         }

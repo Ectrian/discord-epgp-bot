@@ -1,10 +1,17 @@
 package com.epgpbot.util;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Provides functionality for formatting ASCII tables.
@@ -32,6 +39,88 @@ public class TextTable {
       out = fill + out;
     }
     return out;
+  }
+
+  public static ImmutableSet<Class<?>> NUMERIC_TYPES = new ImmutableSet.Builder<Class<?>>()
+      .add(Long.class)
+      .add(Integer.class)
+      .add(Short.class)
+      .add(Float.class)
+      .add(Double.class)
+      .add(long.class)
+      .add(int.class)
+      .add(short.class)
+      .add(float.class)
+      .add(double.class)
+      .build();
+
+  @SuppressWarnings("unchecked")
+  public static <T> String format(List<T> data) {
+    if (data.isEmpty()) {
+      return "(no data)";
+    }
+
+    Class<?> type = data.stream().findFirst().get().getClass();
+    if (Map.class.isAssignableFrom(type)) {
+      return formatListOfMaps((List<Map<String, Object>>)data);
+    }
+
+    // XXX: Is getDeclaredFields ordered consistently?
+    List<String> columns = Arrays
+        .stream(type.getDeclaredFields())
+        .map(i -> i.getName())
+        .collect(Collectors.toList());
+    Set<String> columnsToRJust = Arrays
+        .stream(type.getDeclaredFields())
+        .filter(i -> NUMERIC_TYPES.contains(i.getType()))
+        .map(i -> i.getName())
+        .collect(Collectors.toSet());
+    List<Map<String, Object>> data2 = data
+        .stream()
+        .map(i -> {
+          try {
+            Map<String, Object> row = new HashMap<>();
+            for (Field f : i.getClass().getDeclaredFields()) {
+              if (f.canAccess(i)) {
+                row.put(f.getName(), f.get(i));
+              }
+            }
+            return row;
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.toList());
+    return format(columns, data2, columnsToRJust);
+  }
+
+  private static String formatListOfMaps(List<Map<String, Object>> data) {
+    Set<String> rjustColumns = new LinkedHashSet<>();
+    Set<String> columns = new LinkedHashSet<>();
+
+    for (Map<String, Object> row : data) {
+      for (Map.Entry<String, Object> col : row.entrySet()) {
+        Object value = col.getValue();
+
+        if (value != null && value.getClass().equals(Optional.class)) {
+          Optional<?> opt = (Optional<?>)value;
+          if (opt.isPresent()) {
+            value = opt.get();
+          }
+          else {
+            value = null;
+          }
+        }
+
+        if (value != null && NUMERIC_TYPES.contains(value.getClass())) {
+          rjustColumns.add(col.getKey());
+        }
+
+        columns.add(col.getKey());
+      }
+    }
+
+    return format(ImmutableList.copyOf(columns), data, rjustColumns);
   }
 
   public static String format(List<String> columns,

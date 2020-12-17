@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.epgpbot.database.Cursor;
 import com.epgpbot.epgpbot.commands.CommandHandlerAbstract;
+import com.epgpbot.epgpbot.schema.game.ItemSlot;
 
 public class LogEntry {
   public long eventId;
@@ -23,6 +24,7 @@ public class LogEntry {
   public Optional<String> note;
   public Optional<Long> undoneBy;
   public Optional<Long> undoes;
+  public Optional<ItemSlot> slot;
 
   public String getFormattedDate() {
     return CommandHandlerAbstract.formatDate(timestamp);
@@ -47,6 +49,8 @@ public class LogEntry {
     entry.raidType = r.getNullable("raid_type", Integer.class).map((i) -> RaidType.values()[i]);
     entry.undoes = r.getNullable("undoes", Long.class);
     entry.undoneBy = r.getNullable("undone_by", Long.class);
+    Optional<Integer> slotIdx = r.getNullable("game_slot", Integer.class);
+    entry.slot = slotIdx.map(idx -> ItemSlot.values()[idx]);
     return entry;
   }
 

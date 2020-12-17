@@ -20,6 +20,7 @@ final class RaceAssignment {
 public enum CharacterClass {
   PALADIN(
       "Paladin",
+      2,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DWARF),
           new RaceAssignment(CharacterRace.HUMAN),
@@ -34,6 +35,7 @@ public enum CharacterClass {
   ),
   MAGE(
       "Mage",
+      128,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF, Expansion.since(Expansion.CATACLYSM)),
@@ -59,6 +61,7 @@ public enum CharacterClass {
   ),
   DRUID(
       "Druid",
+      1024,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.NIGHT_ELF),
           new RaceAssignment(CharacterRace.WORGEN),
@@ -72,6 +75,7 @@ public enum CharacterClass {
   ),
   HUNTER(
       "Hunter",
+      4,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF),
@@ -99,6 +103,7 @@ public enum CharacterClass {
   ),
   PRIEST(
       "Priest",
+      16,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF),
@@ -124,6 +129,7 @@ public enum CharacterClass {
   ),
   ROGUE(
       "Rogue",
+      8,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DWARF),
           new RaceAssignment(CharacterRace.GNOME),
@@ -147,6 +153,7 @@ public enum CharacterClass {
   ),
   SHAMAN(
       "Shaman",
+      64,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF, Expansion.since(Expansion.CATACLYSM)),
@@ -165,6 +172,7 @@ public enum CharacterClass {
   ),
   WARLOCK(
       "Warlock",
+      256,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DWARF, Expansion.since(Expansion.CATACLYSM)),
           new RaceAssignment(CharacterRace.GNOME),
@@ -183,6 +191,7 @@ public enum CharacterClass {
   ),
   WARRIOR(
       "Warrior",
+      1,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF),
@@ -210,6 +219,7 @@ public enum CharacterClass {
   ),
   DEATH_KNIGHT(
       "Death Knight",
+      32,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI),
           new RaceAssignment(CharacterRace.DWARF),
@@ -228,6 +238,7 @@ public enum CharacterClass {
   ),
   MONK(
       "Monk",
+      512,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.DRAENEI, Expansion.since(Expansion.MISTS_OF_PANDARIA)),
           new RaceAssignment(CharacterRace.DWARF, Expansion.since(Expansion.MISTS_OF_PANDARIA)),
@@ -252,6 +263,7 @@ public enum CharacterClass {
   ),
   DEMON_HUNTER(
       "Demon Hunter",
+      2048,
       new RaceAssignment[]{
           new RaceAssignment(CharacterRace.NIGHT_ELF),
           new RaceAssignment(CharacterRace.BLOOD_ELF),
@@ -260,11 +272,13 @@ public enum CharacterClass {
   );
 
   public final String name;
+  public final int mask;
   public final ImmutableSet<RaceAssignment> races;
   public final ImmutableSet<Expansion> expansions;
 
-  private CharacterClass(String name, RaceAssignment[] races, Expansion[] expansions) {
+  private CharacterClass(String name, int mask, RaceAssignment[] races, Expansion[] expansions) {
     this.name = name;
+    this.mask = mask;
     this.races = ImmutableSet.copyOf(races);
     this.expansions = ImmutableSet.copyOf(expansions);
   }

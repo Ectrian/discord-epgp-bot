@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.epgpbot.database.Cursor;
+import com.epgpbot.database.ScalarParameter;
 import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.schema.PermissionType;
@@ -19,6 +20,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
 public class TransportListUnlinkedCommandHandler extends CommandHandlerAbstract {
+  private static final ScalarParameter<String> TRANSPORT_ID =
+      ScalarParameter.declare("transport_id", String.class);
+
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
     List<Map<String, Object>> data = new ArrayList<>();
@@ -29,8 +33,8 @@ public class TransportListUnlinkedCommandHandler extends CommandHandlerAbstract 
 
     try (Transaction tx = context.database().transaction()) {
       for (Member m : members) {
-        try (Statement q = tx.prepare("SELECT * FROM transport_users WHERE id = :id;")) {
-          q.bind("id", m.getUser().getId());
+        try (Statement q = tx.prepare("SELECT * FROM transport_users WHERE id = ", TRANSPORT_ID, ";")) {
+          q.bind(TRANSPORT_ID, m.getUser().getId());
           try (Cursor r = q.executeFetch()) {
             if (!r.next()) {
               if (m.getUser().getId().equals(context.transport().raw().getSelfUser().getId())) {

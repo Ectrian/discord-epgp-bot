@@ -15,7 +15,8 @@ public enum EPGPEventType {
   INCENTIVE,
   DECAY,
   NEW_PLAYER,
-  HIDDEN(false);
+  HIDDEN(false),
+  EQUIP;
 
   public final boolean isDocumented;
 

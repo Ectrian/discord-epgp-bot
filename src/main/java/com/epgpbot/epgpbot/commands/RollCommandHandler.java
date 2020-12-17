@@ -11,15 +11,15 @@ import com.google.common.collect.ImmutableList;
 public class RollCommandHandler extends CommandHandlerAbstract {
   @Override
   public void handle(CommandContext context, Request request) throws Exception {
-    SecureRandom prng = new SecureRandom();
-    long min = getLongArg(request, 0).orElse(1L);
-    long max = getLongArg(request, 1).orElse(100L);
+    long min = request.arg("min", 0).longOption().orElse(1L);
+    long max = request.arg("max", 1).longOption().orElse(100L);
 
     if (min < 0 || max < 0 || min >= max) {
       sendCorrectUsage(context);
       return;
     }
 
+    SecureRandom prng = new SecureRandom();
     double value = prng.nextDouble();
     long roll = Math.round(min + (value * (max - min)));
 

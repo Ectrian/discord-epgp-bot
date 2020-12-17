@@ -11,6 +11,7 @@ import com.epgpbot.database.Cursor;
 import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
 import com.epgpbot.epgpbot.commands.EPGPLogV2CommandHandler;
+import com.epgpbot.epgpbot.schema.game.ItemSlotGroup;
 import com.epgpbot.transport.CommandContext;
 import com.epgpbot.transport.Request;
 import com.epgpbot.util.PlayerId;
@@ -26,6 +27,7 @@ public class LogEntryFilter {
   public Optional<Set<EPGPEventType>> eventTypes = Optional.empty();
   public Optional<Set<RaidType>> raidTypes = Optional.empty();
   public Optional<Set<Long>> lootIds = Optional.empty();
+  public Optional<Set<ItemSlotGroup>> slots = Optional.empty();
   public boolean includeUndos = false;
   public String sortBy = "timestamp";
 
@@ -35,6 +37,7 @@ public class LogEntryFilter {
     // TODO: raidTypes
     // TODO: timestampFrom
     // TODO: timestampUntil
+    // TODO: slots
 
     if (eventIds.isPresent()) {
       filters.add("l.id IN " + Statement.in("event_ids", eventIds.get()));
@@ -74,7 +77,8 @@ public class LogEntryFilter {
       + "  sp.name AS source_player_name, "
       + "  tp.name AS target_player_name, "
       + "  tc.name AS target_character_name, "
-      + "  lt.name AS loot_name "
+      + "  lt.name AS loot_name,"
+      + "  (SELECT lgi.game_slot FROM loot_game_info AS lgi WHERE lgi.loot_id = lt.id LIMIT 1) AS game_slot "
       + "FROM "
       + "  epgp_log AS l "
       + "JOIN "
@@ -194,6 +198,7 @@ public class LogEntryFilter {
     }
 
     filter.eventTypes = Optional.of(new HashSet<>(ImmutableSet.copyOf(EPGPEventType.values())));
+    filter.eventTypes.get().remove(EPGPEventType.EQUIP);
 
     if (request.hasFlag("type")) {
       Set<EPGPEventType> eventTypes = new HashSet<>();
@@ -209,9 +214,26 @@ public class LogEntryFilter {
       filter.eventTypes = Optional.of(eventTypes);
     }
 
+    if (request.hasFlag("slot") ) {
+      Set<ItemSlotGroup> slots = new HashSet<>();
+
+      for (String type : request.flag("slot")) {
+        ItemSlotGroup slot = ItemSlotGroup.forString(type);
+        if (slot == null) {
+          context.abort("Unknown type '%s' - expected {%s}.", type, ItemSlotGroup.docChoices());
+        }
+        slots.add(slot);
+      }
+
+      filter.slots = Optional.of(slots);
+    }
+
     if (request.hasFlag("show")) {
       if (request.flag("show").contains("undo")) {
         filter.includeUndos = true;
+      }
+      if (request.flag("show").contains("equip")) {
+        filter.eventTypes.get().add(EPGPEventType.EQUIP);
       }
     }
 
@@ -235,6 +257,23 @@ public class LogEntryFilter {
   private boolean matches(LogEntry entry) {
     if (eventIds.isPresent()) {
       if (!eventIds.get().contains(entry.eventId)) {
+        return false;
+      }
+    }
+
+    if (slots.isPresent()) {
+      boolean match = false;
+
+      if (entry.slot.isPresent()) {
+        for (ItemSlotGroup isg : slots.get()) {
+          if (isg.slots.contains(entry.slot.get())) {
+            match = true;
+            break;
+          }
+        }
+      }
+
+      if (!match) {
         return false;
       }
     }

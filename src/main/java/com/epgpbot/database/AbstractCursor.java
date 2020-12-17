@@ -1,6 +1,7 @@
 package com.epgpbot.database;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,25 +50,53 @@ public abstract class AbstractCursor implements Cursor {
     try {
       T object = supplier.get();
 
-      for (Field f : object.getClass().getDeclaredFields()) {
-        if (!f.canAccess(object)) {
-          continue;
-        }
-        if (f.getAnnotation(DBIgnore.class) != null) {
-          continue;
-        }
+      for (Class<?> type = object.getClass(); type != null; type = type.getSuperclass()) {
+        for (Field f : type.getDeclaredFields()) {
+          if (Modifier.isStatic(f.getModifiers())) {
+            continue;
+          }
+          if (!Modifier.isPublic(f.getModifiers())) {
+            continue;
+          }
+          if (!f.canAccess(object)) {
+            throw new IllegalArgumentException(String.format("Cannot access %s", f));
+          }
+          if (f.getAnnotation(DBIgnore.class) != null) {
+            continue;
+          }
 
-        String name = f.getName();
-        DBField nameOverride = f.getAnnotation(DBField.class);
-        if (nameOverride != null) {
-          name = nameOverride.value();
-        }
+          String name = f.getName();
+          DBField nameOverride = f.getAnnotation(DBField.class);
+          if (nameOverride != null) {
+            name = nameOverride.value();
+          }
 
-        if (f.getType().isEnum()) {
-          f.set(object, f.getType().getEnumConstants()[get(name, Integer.class)]);
-        }
-        else {
-          f.set(object, get(name, f.getType()));
+          try {
+            if (f.getAnnotation(DBNullable.class) != null) {
+              if (f.getType().isEnum()) {
+                Optional<Integer> ordinal = getNullable(name, Integer.class);
+                if (ordinal.isPresent()) {
+                  f.set(object, f.getType().getEnumConstants()[ordinal.get()]);
+                } else {
+                  f.set(object, null);
+                }
+              }
+              else {
+                f.set(object, getNullable(name, f.getType()).orElse(null));
+              }
+            }
+            else {
+              if (f.getType().isEnum()) {
+                f.set(object, f.getType().getEnumConstants()[get(name, Integer.class)]);
+              }
+              else {
+                f.set(object, get(name, f.getType()));
+              }
+            }
+          }
+          catch (Exception e) {
+            throw new Exception(String.format("Failed to scan field %s", f), e);
+          }
         }
       }
 

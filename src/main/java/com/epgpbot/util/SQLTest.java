@@ -1,4 +1,4 @@
-package com.epgpbot.database.mysql;
+package com.epgpbot.util;
 
 import java.util.List;
 import java.util.Map;
@@ -8,10 +8,12 @@ import com.epgpbot.database.ArrayParameter;
 import com.epgpbot.database.Cursor;
 import com.epgpbot.database.DBField;
 import com.epgpbot.database.DBIgnore;
+import com.epgpbot.database.DBNullable;
 import com.epgpbot.database.Database;
 import com.epgpbot.database.ScalarParameter;
 import com.epgpbot.database.Statement;
 import com.epgpbot.database.Transaction;
+import com.epgpbot.database.mysql.SQLDatabase;
 import com.epgpbot.epgpbot.schema.EPGPEventType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -30,6 +32,7 @@ public class SQLTest {
     public long id;
     public long ep_delta;
     public long gp_delta;
+    public @DBNullable Long undone_by;
     public @DBIgnore long erMahGawd;
     public @DBField("type") EPGPEventType eventType;
 
@@ -132,6 +135,7 @@ public class SQLTest {
         }
       }
       System.out.format("rows: %s\n", rows);
+      System.out.println(TextTable.format(rows));
 
       List<Map<String, Object>> rows2;
       try (Transaction tx = db.transaction()) {
@@ -143,6 +147,7 @@ public class SQLTest {
         }
       }
       System.out.format("rows: %s\n", rows2);
+      System.out.println(TextTable.format(rows2));
     }
   }
 }

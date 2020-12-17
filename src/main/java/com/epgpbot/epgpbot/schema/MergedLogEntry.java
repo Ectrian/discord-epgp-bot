@@ -115,6 +115,10 @@ public class MergedLogEntry {
       row.put("note", first.note.get());
     }
 
+    if (opts.showSlot && first.slot.isPresent()) {
+      row.put("slot", first.slot);
+    }
+
     if (first.eventType == EPGPEventType.DECAY) {
       if (targetPlayerNames.size() > 1) {
         row.put("ep", "*");
@@ -149,6 +153,10 @@ public class MergedLogEntry {
 
     else if (first.eventType == EPGPEventType.HIDDEN) {
       row.put("reason", String.format("Hidden"));
+    }
+
+    else if (first.eventType == EPGPEventType.EQUIP) {
+      row.put("reason", String.format("Equip (%s)", first.lootName.orElse("UNKNOWN ITEM")));
     }
 
     else {

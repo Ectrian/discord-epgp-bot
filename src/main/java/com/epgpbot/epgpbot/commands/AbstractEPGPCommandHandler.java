@@ -1,5 +1,6 @@
 package com.epgpbot.epgpbot.commands;
 
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -191,20 +192,26 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
         description = String.format("Congratulations, <@%s>!", player.transportUserId);
       }
 
-      context.source().raw()
-        .sendFile(loot.getTooltipImage(), "item.png")
-        .embed(new EmbedBuilder()
-            .setAuthor("Loot Awarded")
-            .setTitle(loot.name, loot.getDatabaseURL())
-            .addField("GP", String.format("+%d", gpDelta), true)
-            .addField("Player", player.name, true)
-            .addField("Character", characterName, true)
-            .setDescription(description)
-            .setImage("attachment://item.png")
-            .setFooter(String.format("By Officer: %s", context.user().playerName()), null)
-            .setColor(ItemRarity.values()[loot.itemRarity].color)
-            .build())
-        .queue();
+      InputStream tooltip = loot.getTooltipImage();
+
+      if (tooltip != null) {
+        context.source().raw()
+          .sendFile(tooltip, "item.png")
+          .embed(new EmbedBuilder()
+              .setAuthor("Loot Awarded")
+              .setTitle(loot.name, loot.getDatabaseURL())
+              .addField("GP", String.format("+%d", gpDelta), true)
+              .addField("Player", player.name, true)
+              .addField("Character", characterName, true)
+              .setDescription(description)
+              .setImage("attachment://item.png")
+              .setFooter(String.format("By Officer: %s", context.user().playerName()), null)
+              .setColor(ItemRarity.values()[loot.itemRarity].color)
+              .build())
+          .queue();
+      } else {
+        context.reply("Operation successful - 1 players updated.");
+      }
     }
     else {
       context.reply("Operation successful - 1 players updated.");

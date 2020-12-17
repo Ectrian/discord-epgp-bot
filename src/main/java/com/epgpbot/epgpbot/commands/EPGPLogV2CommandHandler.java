@@ -33,7 +33,7 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
   @Override
   public String help() {
     // Undocumented: --show-hidden
-    return "[<...character:string|'<all>'>] [--id <...id:int>] [--type <...type:string>] [--officer <...character:string>] [--loot <...item:string> [--show <...{id|character|note|undo}>] [--sort {time|action_time}] - Displays EPGP logs.";
+    return "[<...character:string|'<all>'>] [--id <...id:int>] [--type <...type:string>] [--officer <...character:string>] [--loot <...item:string>] [--slot <...slot:string>] [--show <...{id|character|note|undo}>] [--sort {time|action_time}] - Displays EPGP logs.";
   }
 
   @Override
@@ -55,11 +55,15 @@ public class EPGPLogV2CommandHandler extends CommandHandlerAbstract {
         + "  Filter the log to include only actions performed by the given officer(s).\n"
         + "[--loot <...item:string>]:\n"
         + "  Filter the log to include only the specific in-game items.\n"
-        + "[--show <...{id|character|note}>]:\n"
+        + "[--slot <...slot>]:\n"
+        + "  Filter the log to include only items equipable in certain slots (e.g. weapon, neck, etc).\n"
+        + "[--show <...{id|character|note|slot}>]:\n"
         + "  Display the given extra column(s) - by default, they are hidden.\n"
         + "  In particular, --show id is useful for getting IDs needed by !epgp.undo.\n"
         + "[--show undo]:\n"
         + "  Display UNDO's and entries that have been UNDONE - by default, they are hidden.\n"
+        + "[--show equip]:\n"
+        + "  Display EQUIP entries (only used for UI).\n"
         + "[--sort <{time|action_time}>]:\n"
         + "  Sort the log by the given field.\n"
         + "  time: When the event occurred.\n"

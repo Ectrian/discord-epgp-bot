@@ -5,10 +5,15 @@ import java.util.List;
 
 // Parses EPGP bot commands.
 // Commands are in UNIX bash-like format...
-// e.g. !command arg1 arg2 "quoted arg" --flag --flag with-value
+// e.g. !command arg1 arg2 "quoted arg" 'single quotes arg' [bracketed arg] --flag --flag with-value
 public class CommandParser {
   enum State {
-    BEGIN_TOKEN, IN_LITERAL, IN_DQUOTED_LITERAL, IN_SQUOTED_LITERAL, TOKEN_GAP,
+    BEGIN_TOKEN,
+    IN_LITERAL,
+    IN_DQUOTED_LITERAL,
+    IN_SQUOTED_LITERAL,
+    IN_BRACKETED_LITERAL,
+    TOKEN_GAP,
   }
 
   public static class ParseException extends Exception {
@@ -35,6 +40,10 @@ public class CommandParser {
           }
 
           switch (input.charAt(i)) {
+            case '[':
+              state = State.IN_BRACKETED_LITERAL;
+              i++;
+              continue;
             case '"':
               state = State.IN_DQUOTED_LITERAL;
               i++;
@@ -117,6 +126,24 @@ public class CommandParser {
 
           switch (input.charAt(i)) {
             case '\'':
+              tokens.add(token);
+              state = State.TOKEN_GAP;
+              i++;
+              continue;
+            default:
+              token += input.charAt(i);
+              i++;
+              continue;
+          }
+        }
+
+        case IN_BRACKETED_LITERAL: {
+          if (i >= input.length()) {
+            throw new ParseException("Unterminated bracketed literal.");
+          }
+
+          switch (input.charAt(i)) {
+            case ']':
               tokens.add(token);
               state = State.TOKEN_GAP;
               i++;

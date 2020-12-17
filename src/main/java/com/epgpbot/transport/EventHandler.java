@@ -11,6 +11,7 @@ import com.epgpbot.armory.transport.ArmoryRequest;
 import com.epgpbot.config.ArmoryType;
 import com.epgpbot.config.Config;
 import com.epgpbot.database.Database;
+import com.epgpbot.epgpbot.commands.AttendanceCommandHandler;
 import com.epgpbot.epgpbot.commands.CharacterAltsCommandHandler;
 import com.epgpbot.epgpbot.commands.CharacterListCommandHandler;
 import com.epgpbot.epgpbot.commands.CharacterSyncCommandHandler;
@@ -37,6 +38,7 @@ import com.epgpbot.epgpbot.commands.EPGPTopDockedCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPStandingsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPTotalsCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPUndoCommandHandler;
+import com.epgpbot.epgpbot.commands.EquipCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildOfficersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildMembersCommandHandler;
 import com.epgpbot.epgpbot.commands.GuildSyncCommandHandler;
@@ -126,6 +128,8 @@ public class EventHandler implements AutoCloseable {
 
     handlers.add(new RollCommandHandler());
 
+    handlers.add(new EquipCommandHandler());
+
     handlers.add(new TransportWhoisCommandHandler());
     handlers.add(new TransportListUnlinkedCommandHandler());
     handlers.add(new TransportListNoRolesCommandHandler());
@@ -145,6 +149,7 @@ public class EventHandler implements AutoCloseable {
 
     switch (config.loot_method) {
       case EPGP:
+        handlers.add(new AttendanceCommandHandler());
         handlers.add(new EPGPCommandHandler());
         handlers.add(new EPGPDecayCommandHandler());
         handlers.add(new EPGPDockCommandHandler());

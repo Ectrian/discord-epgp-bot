@@ -14,6 +14,7 @@ public class LogEntryFormatOptions {
   boolean showEventId = false;
   boolean showTargetCharacterName = false;
   boolean showNote = false;
+  boolean showSlot = false;
 
   public static LogEntryFormatOptions forRequest(CommandContext context, Request request, Transaction tx) {
     LogEntryFormatOptions opts = new LogEntryFormatOptions();
@@ -31,6 +32,10 @@ public class LogEntryFormatOptions {
 
       if (vals.contains("note")) {
         opts.showNote = true;
+      }
+
+      if (vals.contains("slot")) {
+        opts.showSlot = true;
       }
     }
 
@@ -53,6 +58,9 @@ public class LogEntryFormatOptions {
     columns.add("officer");
     if (showNote) {
       columns.add("note");
+    }
+    if (showSlot) {
+      columns.add("slot");
     }
     return ImmutableList.copyOf(columns);
   }

@@ -5,7 +5,6 @@ import java.sql.Connection;
 import com.epgpbot.database.AbstractTransaction;
 import com.epgpbot.database.IsolationLevel;
 import com.epgpbot.database.Statement;
-import com.google.common.collect.ImmutableList;
 
 public class SQLTransaction extends AbstractTransaction {
   private final Connection connection;
