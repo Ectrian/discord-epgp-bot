@@ -1,7 +1,6 @@
 package com.epgpbot.util;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,9 +19,7 @@ import com.epgpbot.epgpbot.schema.game.CharacterClass;
 import com.epgpbot.epgpbot.schema.game.Expansion;
 import com.epgpbot.epgpbot.schema.game.ItemRarity;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 
 // Use Mangos Project DB since it already has items available in SQL format.
 public class MangosImport {

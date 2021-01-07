@@ -96,6 +96,12 @@ public class DiscordUser implements com.epgpbot.transport.User {
     return user.getName();
   }
 
+
+  @Override
+  public String qualifiedTransportUserName() {
+    return user.getAsTag();
+  }
+
   @Override
   public boolean hasPlayer() {
     return playerId >= 0;

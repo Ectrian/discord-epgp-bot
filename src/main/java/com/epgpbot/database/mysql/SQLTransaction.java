@@ -79,4 +79,9 @@ public class SQLTransaction extends AbstractTransaction {
   Connection connection() {
     return connection;
   }
+
+  @Override
+  public void abort() {
+    setFailed();
+  }
 }

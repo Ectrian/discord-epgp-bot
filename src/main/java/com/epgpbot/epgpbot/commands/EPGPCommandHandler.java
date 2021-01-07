@@ -26,7 +26,11 @@ public class EPGPCommandHandler extends AbstractEPGPCommandHandler {
       try (Transaction tx = context.database().transaction()) {
         PlayerId player = getInferredPlayer(tx, context);
         if (player == null) {
-          sendError(context, "I'm not sure who you are. Try using '!epgp <character>' instead.");
+          sendError(context,
+                "I'm not sure who you are. "
+              + "Try using '!epgp <character>' instead, or ask an officer to link your Discord account via "
+              + String.format("'!player.transport.link <player> %s'.",
+                  context.user().qualifiedTransportUserName()));
           return;
         }
 
