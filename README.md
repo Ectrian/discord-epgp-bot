@@ -47,7 +47,7 @@ A discord bot for managing your World of Warcraft guild's EPGP.
     * e.g. https://discord.com/api/oauth2/authorize?client_id=#&permissions=121920&scope=bot
   * Select the server you wish to add your bot to and click "Authorize". You must be a server administrator to perform this step.
 
-* Create a config file (JSON). 
+* Create a config file (JSON).
   * Refer to `com.epgpbot.config.Config` for schema.
   * *Note*: Server ID can be obtained from Discord via Server Settings > Widget > Server ID.
   * An example is provided below:
@@ -196,7 +196,7 @@ Otherwise, you may award or dock EP/GP as follows:
 
 * **To award (add) EP for showing up to raid but not getting invited:**
   * `!epgp.award.standby EP "Raid Name" Character1 Character2 ...`
-  * *Note:* if a player arrives late, you can simply grant them less EP. 
+  * *Note:* if a player arrives late, you can simply grant them less EP.
 
 * **To award (add) GP for receiving loot:**
   * `!epgp.award.loot GP "Item Name" CharacterName`
@@ -211,7 +211,7 @@ Otherwise, you may award or dock EP/GP as follows:
 * **To trigger EPGP decay:**
   * `!epgp.decay`
   * *Note:* This command performs EPGP decay on all players. A single officer should run this command once per decay period (generally, once a week).
- 
+
 Additional Useful Commands:
 
 * `!transport.whois @DiscordMention` - Displays the player name associated with a given Discord account.
@@ -224,7 +224,7 @@ Additional Useful Commands:
 
 * **What versions of the game are supported?**
 
-The bot is currently targeted for WoW Classic, but can used with retail or private servers running any version of the game. 
+The bot is currently targeted for WoW Classic, but can used with retail or private servers running any version of the game.
 
 Use `game_expansion` in your config to let the bot know what version of the game you are targeting.
 
@@ -253,3 +253,7 @@ While these numbers work well for us, they are not necessarily the best choice f
 * **How can I undo an EPGP modification?**
 
 Use `!epgp.undo` (explained above). You could also repeat the command, but with a negative value (`!epgp.undo` is preferred, though, since it leads to a cleaner log).
+
+* **How to build this and run it on a server?**
+
+`mvn compile && mvn assembly:single && java -cp "vendor\JDA.jar;target\epgp-discord-bot-0.0.1-jar-with-dependencies.jar" com.epgpbot.transport.discord.DiscordBotLauncher path/to/config.json`
