@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class DiscordTransport extends ListenerAdapter implements Transport {
   @Override
@@ -72,7 +73,9 @@ public class DiscordTransport extends ListenerAdapter implements Transport {
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.GUILD_MESSAGE_REACTIONS,
         GatewayIntent.DIRECT_MESSAGES,
-        GatewayIntent.DIRECT_MESSAGE_REACTIONS);
+        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+        GatewayIntent.GUILD_PRESENCES);
+    builder.setMemberCachePolicy(MemberCachePolicy.ALL);  // required for GetMutualGuilds to work??
     builder.setAutoReconnect(true);
     builder.addEventListeners(this);
     this.jda = builder.build();

@@ -259,8 +259,15 @@ public class Argument {
   }
 
   private User getTransportUser(CommandContext context, String name) throws Exception {
-    if (name.matches("^<@![0-9]+>$")) {
-      String id = name.substring(3, name.length() - 1);
+    if (name.matches("^<@!?[0-9]+>$")) {
+      String id;
+      if (name.startsWith("<@!")) {
+        id = name.substring(3, name.length() - 1);  // older versions of discord
+      }
+      else {
+        id = name.substring(2, name.length() - 1);  // newer versions of discord
+      }
+      // System.out.format("finding name='%s' has id id='%s'", name, id);
       net.dv8tion.jda.api.entities.User user = context.transport().raw().getUserById(id);
       require(user != null, "invalid user reference (not found)");
       return new DiscordUser(context.database(), context.config(), user, null);

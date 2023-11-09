@@ -33,8 +33,8 @@ A discord bot for managing your World of Warcraft guild's EPGP.
   * Go [here](https://discordapp.com/developers/applications).
   * Create a "New Application".
   * On the "Bot" tab, click "Add Bot".
-  * Ensure "Public Bot" is disabled.
-  * Ensure SERVER MEMBERS INTENT is enabled.
+  * Ensure "Public Bot" is disabled (*unless someone other than you will be adding the bot to servers).
+  * Ensure SERVER MEMBERS INTENT, PRESENCE INTENT, MESSAGE CONTENT INTENT is enabled.
   * Set an avatar for your bot user (optional).
   * Copy and save the token. You will need it later.
 
