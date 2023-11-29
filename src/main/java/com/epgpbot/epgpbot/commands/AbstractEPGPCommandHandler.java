@@ -77,6 +77,7 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
 
     List<String> unknownCharacters = new ArrayList<>();
     List<String> unlinkedCharacters = new ArrayList<>();
+    List<String> negativeBalanceCharacters = new ArrayList<>();  // after the update
     Map<Long, Set<String>> duplicatePlayerIds = new HashMap<>();
     Map<Long, String> characterIds = new HashMap<>();
     Map<Long, Long> playerIds = new HashMap<>();
@@ -84,7 +85,7 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
     for (String characterName : characters) {
       long playerId, characterId;
 
-      try (Statement q = tx.prepare("SELECT id, player_id FROM characters WHERE lower(name) = :name;")) {
+      try (Statement q = tx.prepare("SELECT c.id, c.player_id, p.ep_net FROM characters AS c LEFT JOIN players AS p ON c.player_id = p.id WHERE lower(c.name) = :name;")) {
         q.bind("name", characterName);
         try (Cursor r = q.executeFetch()) {
           if (!r.next()) {
@@ -98,6 +99,10 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
           }
           characterId = r.get("id", Long.class);
           playerId = playerIdOpt.get();
+          long curEPBalance = r.getNullable("ep_net", Long.class).orElse(0L);
+          if (curEPBalance + epDelta < 0) {
+            negativeBalanceCharacters.add(characterName);
+          }
         }
       }
 
@@ -125,6 +130,11 @@ public abstract class AbstractEPGPCommandHandler extends CommandHandlerAbstract 
     if (!unlinkedCharacters.isEmpty()) {
       for (String c : unlinkedCharacters) {
         errorMessage.append(String.format("Unlinked character '%s'.\n", c));
+      }
+    }
+    if (!negativeBalanceCharacters.isEmpty()) {
+      for (String c : negativeBalanceCharacters) {
+        errorMessage.append(String.format("Unable to update character '%s' as operation would create a negative balance.\n", c));
       }
     }
     if (!duplicatePlayerIds.isEmpty()) {
