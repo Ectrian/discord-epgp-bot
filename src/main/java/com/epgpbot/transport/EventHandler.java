@@ -19,6 +19,7 @@ import com.epgpbot.epgpbot.commands.CharacterUpdateCommandHandler;
 import com.epgpbot.epgpbot.commands.CharacterWhoCanPlayCommandHandler;
 import com.epgpbot.epgpbot.commands.CharacterWhoisCommandHandler;
 import com.epgpbot.epgpbot.commands.CommandHandler;
+import com.epgpbot.epgpbot.commands.DKPAwardLootCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPAdjustCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPAwardIncentiveCommandHandler;
 import com.epgpbot.epgpbot.commands.EPGPAwardLootCommandHandler;
@@ -171,6 +172,7 @@ public class EventHandler implements AutoCloseable {
         handlers.add(new EPGPTopDockedCommandHandler());
         handlers.add(new EPGPUndoCommandHandler());
         handlers.add(new EPGPLootBackfillCommandHandler());
+        handlers.add(new DKPAwardLootCommandHandler());
         break;
       case DKP:
         break;
